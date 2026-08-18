@@ -233,6 +233,11 @@ pageTurnOverlay.className='page-turn-overlay no-print';
 pageTurnOverlay.setAttribute('aria-hidden','true');
 pageTurnOverlay.innerHTML='<div class="page-turn-sheet"><div class="page-turn-face"></div><div class="page-turn-face page-turn-back"></div></div>';
 document.body.append(pageTurnOverlay);
+const mouseMascot=document.createElement('div');
+mouseMascot.className='mouse-mascot no-print';
+mouseMascot.setAttribute('aria-label','Cheerful mouse mascot');
+mouseMascot.innerHTML='<div class="mouse-ear mouse-ear-left"></div><div class="mouse-ear mouse-ear-right"></div><div class="mouse-head"><span class="mouse-eye mouse-eye-left"></span><span class="mouse-eye mouse-eye-right"></span><span class="mouse-nose"></span><span class="mouse-smile"></span></div><div class="mouse-body"><span class="mouse-button mouse-button-left"></span><span class="mouse-button mouse-button-right"></span></div><div class="mouse-shoe mouse-shoe-left"></div><div class="mouse-shoe mouse-shoe-right"></div><span class="mouse-wave">👋</span>';
+document.body.append(mouseMascot);
 let pageTurnStarted=false;
 document.addEventListener('click',(event)=>{
   const link=event.target.closest('a[href]');
@@ -245,5 +250,5 @@ document.addEventListener('click',(event)=>{
   pageTurnStarted=true;
   document.body.classList.add('page-leaving');
   pageTurnOverlay.classList.add('is-turning');
-  window.setTimeout(()=>{window.location.href=destination.href;},1080);
+  window.setTimeout(()=>{window.location.href=destination.href;},860);
 });
