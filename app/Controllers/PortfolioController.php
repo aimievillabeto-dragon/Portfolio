@@ -160,6 +160,8 @@ final class PortfolioController
                     'availability' => trim($_POST['availability'] ?? ''),
                     'age' => trim($_POST['age'] ?? ''),
                     'birthdate' => trim($_POST['birthdate'] ?? ''),
+                    'address' => trim($_POST['address'] ?? ''),
+                    'sex' => trim($_POST['sex'] ?? ''),
                     'school' => trim($_POST['school'] ?? ''),
                     'course_year' => trim($_POST['course_year'] ?? ''),
                     'dream_job' => trim($_POST['dream_job'] ?? ''),
@@ -250,6 +252,8 @@ final class PortfolioController
             break;
         }
 
+        $this->migrateLegacyOwnerContent();
+
         $statement = db()->query("SELECT id,draft_data,published_data,is_published FROM content_documents WHERE type='resume' LIMIT 1");
         $resume = $statement->fetch();
         if (!$resume) return;
@@ -275,6 +279,53 @@ final class PortfolioController
         $json = json_encode($sampleData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         $update = db()->prepare('UPDATE content_documents SET draft_data=?,published_data=? WHERE id=?');
         $update->execute([$json, $resume['is_published'] ? $json : $resume['published_data'], $resume['id']]);
+    }
+
+    private function migrateLegacyOwnerContent(): void
+    {
+        $replacements = [
+            'profile' => [
+                'name' => 'Aimie Villabeto',
+                'full_name' => 'Aimie Villabeto D.',
+                'location' => 'Regla, Guipos, Zamboanga del Sur',
+                'address' => 'Regla, Guipos, Zamboanga del Sur',
+                'age' => '21',
+                'birthdate' => 'March 7, 2005',
+                'sex' => 'Female',
+            ],
+            'resume' => [
+                'name' => 'AIMIE VILLABETO D.',
+                'headline' => 'STUDENT DEVELOPER',
+                'location' => 'Regla, Guipos, Zamboanga del Sur',
+                'phone' => '',
+                'email' => '',
+                'github' => 'github.com/aimievillabeto-dragon',
+                'linkedin' => '',
+            ],
+            'contact' => [
+                'email' => '',
+                'message' => 'View my work and projects on GitHub.',
+                'links' => [['label' => 'GitHub', 'url' => 'https://github.com/aimievillabeto-dragon']],
+            ],
+        ];
+
+        $statement = db()->query("SELECT id,type,draft_data,published_data FROM content_documents WHERE type IN ('profile','resume','contact')");
+        $update = db()->prepare('UPDATE content_documents SET draft_data=?,published_data=? WHERE id=?');
+        foreach ($statement->fetchAll() as $item) {
+            $draftJson = (string) ($item['draft_data'] ?? '');
+            $publishedJson = (string) ($item['published_data'] ?? '');
+            if (!preg_match('/Cagatin|Mark Jed|yukino123-bee|cagatinmark26/i', $draftJson . $publishedJson)) continue;
+
+            $draft = json_decode($draftJson, true) ?: [];
+            $published = json_decode($publishedJson, true) ?: [];
+            $draft = array_replace($draft, $replacements[$item['type']]);
+            $published = array_replace($published, $replacements[$item['type']]);
+            $update->execute([
+                json_encode($draft, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+                json_encode($published, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+                $item['id'],
+            ]);
+        }
     }
 
     private function storeDocument(string $contentId, string $kind, string $filename, string $mime, string $temporaryPath): string
