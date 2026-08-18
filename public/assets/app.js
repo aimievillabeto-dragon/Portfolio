@@ -243,6 +243,7 @@ document.addEventListener('click',(event)=>{
   if(destination.pathname===window.location.pathname&&destination.search===window.location.search&&destination.hash)return;
   event.preventDefault();
   pageTurnStarted=true;
+  document.body.classList.add('page-leaving');
   pageTurnOverlay.classList.add('is-turning');
-  window.setTimeout(()=>{window.location.href=destination.href;},620);
+  window.setTimeout(()=>{window.location.href=destination.href;},1080);
 });
