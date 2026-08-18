@@ -314,10 +314,13 @@ final class PortfolioController
         foreach ($statement->fetchAll() as $item) {
             $draftJson = (string) ($item['draft_data'] ?? '');
             $publishedJson = (string) ($item['published_data'] ?? '');
-            if (!preg_match('/Cagatin|Mark Jed|yukino123-bee|cagatinmark26/i', $draftJson . $publishedJson)) continue;
-
             $draft = json_decode($draftJson, true) ?: [];
             $published = json_decode($publishedJson, true) ?: [];
+            $hasLegacyOwner = preg_match('/Cagatin|Mark Jed|yukino123-bee|cagatinmark26/i', $draftJson . $publishedJson);
+            $needsShortDisplayName = $item['type'] === 'profile'
+                && (($draft['name'] ?? '') === 'Aimie Villabeto D.' || ($published['name'] ?? '') === 'Aimie Villabeto D.');
+            if (!$hasLegacyOwner && !$needsShortDisplayName) continue;
+
             $draft = array_replace($draft, $replacements[$item['type']]);
             $published = array_replace($published, $replacements[$item['type']]);
             $update->execute([
