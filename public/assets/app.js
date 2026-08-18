@@ -102,6 +102,13 @@ themeToggle.addEventListener('click',()=>{
 });
 
 const button=document.querySelector('#menu-button');const menu=document.querySelector('#mobile-menu');button?.addEventListener('click',()=>{menu?.classList.toggle('hidden');button.setAttribute('aria-expanded',String(!menu?.classList.contains('hidden')))});
+const mainNavigation=document.querySelector('.sidebar-nav');
+if(mainNavigation&&!mainNavigation.querySelector('a[href*="page=about"]')){
+  const aboutLink=document.createElement('a');
+  aboutLink.href='/?page=about';
+  aboutLink.textContent='About Me';
+  mainNavigation.querySelector('a')?.after(aboutLink);
+}
 const activeViewCount=document.querySelector('#active-view-count');
 const updateActiveViews=async()=>{
   if(!activeViewCount||document.hidden)return;
@@ -120,6 +127,19 @@ const profileNameButton=document.querySelector('#profile-name-button');
 const profileInfo=document.querySelector('#profile-full-info');
 const learningTags=document.querySelector('.profile-intro > .mt-6');
 const currentWork=document.querySelector('.current-work');
+const profileIntro=document.querySelector('.profile-intro');
+if(profileIntro&&profileNameButton){
+  const stats=document.createElement('div');
+  stats.className='editorial-stats';
+  stats.innerHTML='<div><strong>21</strong><span>Years old</span></div><div><strong>01</strong><span>Portfolio</span></div>';
+  const greeting=document.createElement('p');
+  greeting.className='editorial-greeting';
+  greeting.textContent='Hello';
+  const tagline=document.createElement('p');
+  tagline.className='editorial-tagline';
+  tagline.textContent='— It’s Aimie, a student developer.';
+  profileIntro.prepend(stats,greeting,tagline);
+}
 if(learningTags&&currentWork){
   const learningSection=document.createElement('section');
   learningSection.className='learning-section';
