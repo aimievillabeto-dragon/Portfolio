@@ -227,3 +227,22 @@ document.querySelectorAll('a[download]').forEach((link)=>{
     if(event.key==='Enter'||event.key===' '){event.preventDefault();savePdf();}
   });
 });
+
+const pageTurnOverlay=document.createElement('div');
+pageTurnOverlay.className='page-turn-overlay no-print';
+pageTurnOverlay.setAttribute('aria-hidden','true');
+pageTurnOverlay.innerHTML='<div class="page-turn-sheet"><div class="page-turn-face"></div><div class="page-turn-face page-turn-back"></div></div>';
+document.body.append(pageTurnOverlay);
+let pageTurnStarted=false;
+document.addEventListener('click',(event)=>{
+  const link=event.target.closest('a[href]');
+  if(!link||pageTurnStarted||reducedMotion||event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+  if(link.target==='_blank'||link.hasAttribute('download'))return;
+  const destination=new URL(link.href,window.location.href);
+  if(destination.origin!==window.location.origin)return;
+  if(destination.pathname===window.location.pathname&&destination.search===window.location.search&&destination.hash)return;
+  event.preventDefault();
+  pageTurnStarted=true;
+  pageTurnOverlay.classList.add('is-turning');
+  window.setTimeout(()=>{window.location.href=destination.href;},620);
+});
