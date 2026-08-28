@@ -9,7 +9,8 @@ function load_env(string $path): void
         if ($line === '' || str_starts_with($line, '#') || !str_contains($line, '=')) continue;
         [$key, $value] = array_map('trim', explode('=', $line, 2));
         $value = trim($value, "\"'");
-        if (!array_key_exists($key, $_ENV)) $_ENV[$key] = $value;
+        $_ENV[$key] = $value;
+        putenv("{$key}={$value}");
     }
 }
 
@@ -17,11 +18,11 @@ load_env(dirname(__DIR__) . '/.env');
 
 function env(string $key, ?string $default = null): ?string
 {
+    if (array_key_exists($key, $_ENV) && $_ENV[$key] !== '') return (string) $_ENV[$key];
     if (function_exists('getenv')) {
         $value = getenv($key);
-        if ($value !== false) return $value;
+        if ($value !== false && $value !== '') return $value;
     }
-    if (array_key_exists($key, $_ENV)) return (string) $_ENV[$key];
     return $default;
 }
 

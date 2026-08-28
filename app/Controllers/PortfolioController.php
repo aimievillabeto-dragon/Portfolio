@@ -41,10 +41,38 @@ final class PortfolioController
             'page' => $page,
             'slug' => $slug,
             'error' => $error,
-            'profile' => $this->content->publishedOne('profile')['data'] ?? [],
+            'profile' => $this->getProfileData(),
             'contact' => $this->content->publishedOne('contact')['data'] ?? [],
             ...$this->pageData($page, $slug),
         ]);
+    }
+
+    private function getProfileData(): array
+    {
+        $profile = $this->content->publishedOne('profile')['data'] ?? [];
+        $targetIntro = "I'm Aimie Villabeto. An IT student who enjoys turning ideas into functional digital solutions. Here, you'll find a collection of my projects, skills, experiences, and the things I've learned along the way.";
+        $targetBio = "";
+        if (empty($profile['intro']) || $profile['intro'] !== $targetIntro) {
+            $profile['intro'] = $targetIntro;
+            $profile['biography'] = $targetBio;
+            if (database_ready()) {
+                try {
+                    $stmt = db()->query("SELECT id, draft_data, published_data FROM content_documents WHERE type='profile' LIMIT 1");
+                    $row = $stmt ? $stmt->fetch() : null;
+                    if ($row) {
+                        $draft = json_decode($row['draft_data'], true) ?: [];
+                        $published = json_decode($row['published_data'], true) ?: [];
+                        $draft['intro'] = $targetIntro;
+                        $draft['biography'] = $targetBio;
+                        $published['intro'] = $targetIntro;
+                        $published['biography'] = $targetBio;
+                        $update = db()->prepare("UPDATE content_documents SET draft_data=?, published_data=? WHERE id=?");
+                        $update->execute([json_encode($draft, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), json_encode($published, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), $row['id']]);
+                    }
+                } catch (\Throwable) {}
+            }
+        }
+        return $profile;
     }
 
     private function pageData(string $page, ?string $slug): array
@@ -84,16 +112,53 @@ final class PortfolioController
         $action = $_POST['action'] ?? '';
         if ($action === 'login') {
             verify_csrf();
-            if (!database_ready()) return 'Set up and seed MySQL before signing in.';
-            $statement = db()->prepare('SELECT * FROM owners WHERE email=? LIMIT 1');
-            $statement->execute([strtolower(trim($_POST['email'] ?? ''))]);
-            $owner = $statement->fetch();
-            if ($owner && password_verify($_POST['password'] ?? '', $owner['password_hash'])) {
+            $inputEmail = strtolower(trim($_POST['email'] ?? ''));
+            $inputPassword = trim($_POST['password'] ?? '');
+
+            $envEmail = strtolower(trim(env('OWNER_EMAIL', '') ?? ''));
+            $envPassword = trim(env('OWNER_PASSWORD', '') ?? '');
+
+            $authenticated = false;
+            $ownerId = 1;
+
+            if (database_ready()) {
+                $statement = db()->prepare('SELECT * FROM owners WHERE email=? LIMIT 1');
+                $statement->execute([$inputEmail]);
+                $owner = $statement->fetch();
+
+                if ($owner && password_verify($inputPassword, $owner['password_hash'])) {
+                    $authenticated = true;
+                    $ownerId = $owner['id'];
+                }
+            }
+
+            if (!$authenticated && !empty($envEmail) && !empty($envPassword)) {
+                if ($inputEmail === $envEmail && hash_equals($envPassword, $inputPassword)) {
+                    $authenticated = true;
+                    if (database_ready()) {
+                        try {
+                            $hash = password_hash($inputPassword, PASSWORD_DEFAULT);
+                            $stmt = db()->prepare('INSERT INTO owners(email,password_hash) VALUES(?,?) ON DUPLICATE KEY UPDATE password_hash=VALUES(password_hash)');
+                            $stmt->execute([$envEmail, $hash]);
+                            $fetch = db()->prepare('SELECT id FROM owners WHERE email=? LIMIT 1');
+                            $fetch->execute([$envEmail]);
+                            $ownerId = $fetch->fetchColumn() ?: 1;
+                        } catch (\Throwable) {}
+                    }
+                }
+            }
+
+            if ($authenticated) {
                 session_regenerate_id(true);
                 $_SESSION['role'] = 'owner';
-                $_SESSION['owner_id'] = $owner['id'];
+                $_SESSION['owner_id'] = $ownerId;
                 $this->redirect('admin');
             }
+
+            if (!database_ready() && empty($envEmail)) {
+                return 'Set up and seed MySQL or set OWNER_EMAIL and OWNER_PASSWORD in .env before signing in.';
+            }
+
             return 'Invalid email or password.';
         }
         if ($action === 'logout') {
@@ -204,7 +269,10 @@ final class PortfolioController
             } elseif (isset($_POST['reflection_form'])) {
                 $data = [];
                 foreach (['title','date','course','instructor','activity','experience','observations','learning','next_steps','conclusion'] as $field) {
-                    $data[$field] = trim($_POST[$field] ?? '');
+                    if (isset($_POST[$field])) $data[$field] = trim($_POST[$field]);
+                }
+                if (isset($_POST['paragraphs']) && is_array($_POST['paragraphs'])) {
+                    $data['paragraphs'] = array_values(array_filter(array_map('trim', $_POST['paragraphs']), fn($p) => $p !== ''));
                 }
                 $this->preserveUploadedPdf($id, $data);
             } else {
@@ -304,8 +372,11 @@ final class PortfolioController
             ],
             'contact' => [
                 'email' => '',
-                'message' => 'View my work and projects on GitHub.',
-                'links' => [['label' => 'GitHub', 'url' => 'https://github.com/aimievillabeto-dragon']],
+                'message' => 'View my work and projects on Facebook and GitHub.',
+                'links' => [
+                    ['label' => 'Facebook', 'url' => 'https://www.facebook.com/share/1CovpVL5Yy/'],
+                    ['label' => 'GitHub', 'url' => 'https://github.com/aimievillabeto-dragon'],
+                ],
             ],
         ];
 

@@ -129,40 +129,12 @@ const learningTags=document.querySelector('.profile-intro > .mt-6');
 const currentWork=document.querySelector('.current-work');
 const profileIntro=document.querySelector('.profile-intro');
 if(profileIntro&&profileNameButton){
-  const stats=document.createElement('div');
-  stats.className='editorial-stats';
-  stats.innerHTML='<div><strong>21</strong><span>Years old</span></div><div><strong>01</strong><span>Portfolio</span></div>';
   const greeting=document.createElement('p');
   greeting.className='editorial-greeting';
   greeting.textContent='Hello';
-  const tagline=document.createElement('p');
-  tagline.className='editorial-tagline';
-  tagline.textContent='— It’s Aimie, a student developer.';
-  profileIntro.prepend(stats,greeting,tagline);
+  profileIntro.prepend(greeting);
 }
-if(learningTags&&currentWork){
-  const learningSection=document.createElement('section');
-  learningSection.className='learning-section';
-  const learningHeading=document.createElement('div');
-  learningHeading.className='learning-heading';
-  const learningTitleGroup=document.createElement('div');
-  learningTitleGroup.className='section-heading learning-title-group';
-  const learningIndex=document.createElement('span');
-  learningIndex.textContent='01';
-  const learningTitle=document.createElement('p');
-  learningTitle.className='label';
-  learningTitle.textContent='Still learning';
-  const learningEnvironment=document.createElement('p');
-  learningEnvironment.className='learning-environment';
-  learningEnvironment.textContent='Development environment · Main OS Linux - Fedora Workstation';
-  learningTitleGroup.append(learningIndex,learningTitle);
-  learningHeading.append(learningTitleGroup,learningEnvironment);
-  learningTags.classList.remove('mt-6');
-  learningSection.append(learningHeading,learningTags);
-  const currentWorkIndex=currentWork.querySelector('.section-heading > span');
-  if(currentWorkIndex)currentWorkIndex.textContent='02';
-  currentWork.before(learningSection);
-}
+
 let profileCloseButton;
 let profileBackdrop;
 if(profileInfo){
@@ -247,3 +219,102 @@ document.querySelectorAll('a[download]').forEach((link)=>{
     if(event.key==='Enter'||event.key===' '){event.preventDefault();savePdf();}
   });
 });
+
+/* ============================================================
+   Polaroid photo stack — cycle & lightbox
+   ============================================================ */
+const CERTS = [
+  { src: '/assets/achievements/academic-achiever-2026.jpg',   label: 'Academic Achiever · GWA 1.54'    },
+  { src: '/assets/achievements/hackathon-3rd-place-2026.jpg', label: '3rd Place — Hackathon · 2026'     },
+  { src: '/assets/profile-photo.png',                         label: 'Aimie Villabeto · BSIT Student Developer' }
+];
+let currentCert = 0;
+let isAnimating  = false;
+
+/** Sync info cards highlight to the current front photo */
+function syncInfoCards(idx) {
+  // Support both old (.achievement-info-card) and new (.ach-item) selectors
+  const cards = document.querySelectorAll('.ach-item, .achievement-info-card');
+  cards.forEach((card, i) => {
+    card.classList.toggle('is-active', i === idx);
+  });
+  // update dots
+  document.querySelectorAll('.polaroid-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === idx);
+  });
+}
+
+/** Cycle the polaroid stack to show the next photo */
+window.cyclePolaroid = function() {
+  if (isAnimating) return;
+  const front = document.getElementById('polaroidFront');
+  const back  = document.getElementById('polaroidBack');
+  if (!front || !back) return;
+
+  isAnimating = true;
+
+  // Step 1 — animate front card flying off
+  front.classList.add('is-flipping-out');
+
+  // Step 2 — simultaneously bring back card up
+  back.classList.add('is-rising');
+
+  // Step 3 — after animation settles, swap roles
+  setTimeout(() => {
+    // Remove animation classes
+    front.classList.remove('is-flipping-out');
+    back.classList.remove('is-rising');
+
+    // Swap content (images + captions)
+    const nextIdx = (currentCert + 1) % CERTS.length;
+    const prevIdx = currentCert;
+
+    // New front shows nextIdx cert
+    front.querySelector('.polaroid-img').src = CERTS[nextIdx].src;
+    front.querySelector('.polaroid-caption-strip').textContent = CERTS[nextIdx].label;
+    front.style.zIndex = '2';
+    front.style.transform = 'rotate(-3deg)';
+
+    // New back shows prevIdx (now behind)
+    back.querySelector('.polaroid-img').src = CERTS[prevIdx].src;
+    back.querySelector('.polaroid-caption-strip').textContent = CERTS[prevIdx].label;
+    back.classList.add('is-new-back');
+    setTimeout(() => back.classList.remove('is-new-back'), 500);
+
+    currentCert = nextIdx;
+    syncInfoCards(currentCert);
+    isAnimating = false;
+  }, 520);
+};
+
+/** Open full-screen lightbox for a given cert index */
+window.openCertModal = function(idx) {
+  const cert  = CERTS[idx];
+  const lb    = document.getElementById('cert-lightbox');
+  const img   = document.getElementById('cert-lightbox-img');
+  const title = document.getElementById('cert-lightbox-title');
+  if (!lb || !img) return;
+  img.src = cert.src;
+  img.alt = cert.label;
+  if (title) title.textContent = cert.label;
+  lb.classList.add('is-open');
+  lb.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+};
+
+window.closeCertLightbox = function() {
+  const lb = document.getElementById('cert-lightbox');
+  if (!lb) return;
+  lb.classList.remove('is-open');
+  lb.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+};
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') window.closeCertLightbox();
+  if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') window.cyclePolaroid();
+});
+
+// Init active state on page load
+syncInfoCards(0);
+
