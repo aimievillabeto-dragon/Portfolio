@@ -1,0 +1,4 @@
+open ftpupload.net
+if0_42776222
+villabeto05
+quit
