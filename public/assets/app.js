@@ -224,8 +224,8 @@ document.querySelectorAll('a[download]').forEach((link)=>{
    Polaroid photo stack — cycle & lightbox
    ============================================================ */
 const CERTS = [
-  { src: '/assets/achievements/ai-literacy.pdf#toolbar=0&navpanes=0&scrollbar=0&view=Fit',   label: 'Introduction to AI Literacy'    },
-  { src: '/assets/achievements/cybersecurity.pdf#toolbar=0&navpanes=0&scrollbar=0&view=Fit', label: 'Introduction to Cybersecurity'     },
+  { src: '/assets/achievements/ai-literacy.pdf#navpanes=1',   label: 'Introduction to AI Literacy and Responsible Use'    },
+  { src: '/assets/achievements/cybersecurity.pdf#navpanes=1', label: 'Introduction to Cybersecurity'     },
   { src: '/assets/profile-photo.png',                         label: 'Aimie Villabeto · BSIT Student Developer' }
 ];
 let currentCert = 0;

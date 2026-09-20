@@ -1321,13 +1321,14 @@ iframe.pillar-img {
 .cert-lightbox {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: 99999;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
-  background: rgba(40, 20, 32, 0.92);
+  padding: 3.5rem 1rem 1rem;
+  box-sizing: border-box;
+  background: rgba(35, 18, 28, 0.90);
   backdrop-filter: blur(14px);
   opacity: 0;
   pointer-events: none;
@@ -1339,47 +1340,93 @@ iframe.pillar-img {
 }
 .cert-lightbox-back {
   position: absolute;
-  top: 20px;
-  left: 24px;
-  z-index: 10;
-  border: none;
-  background: transparent;
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: inherit;
-  display: flex;
+  top: 16px;
+  left: 20px;
+  z-index: 20;
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem;
+  padding: 0.45rem 1rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  color: #fff;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+  font-family: inherit;
 }
 .cert-lightbox-back:hover {
-  transform: translateX(-4px);
-  color: rgba(255, 255, 255, 0.8);
+  transform: translateX(-3px);
+  background: rgba(255, 255, 255, 0.26);
+  color: #fff;
+}
+
+/* Modal Card Window matching reference picture */
+.cert-lightbox-card {
+  width: min(1180px, 94vw);
+  height: calc(100vh - 145px);
+  max-height: 750px;
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 25px 75px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+  position: relative;
+  z-index: 5;
+  box-sizing: border-box;
+}
+
+.cert-lightbox-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 1.4rem;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+  user-select: none;
+}
+.cert-lightbox-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-family: 'Roboto Mono', ui-monospace, monospace;
+  color: #111827;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  will-change: opacity, transform;
 }
 .cert-lightbox-close {
-  position: absolute;
-  top: 20px;
-  right: 24px;
-  z-index: 10;
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid #e5e7eb;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  font-size: 1.6rem;
+  background: #f4f4f5;
+  color: #18181b;
+  font-size: 1.4rem;
+  line-height: 1;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.18s ease;
+  flex-shrink: 0;
 }
 .cert-lightbox-close:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.08);
+  background: #e4e4e7;
+  color: #000;
+  transform: scale(1.06);
 }
+
 /* Slide keyframes */
 @keyframes cert-slide-in-right {
   from { opacity: 0; transform: translateX(30px); }
@@ -1399,27 +1446,23 @@ iframe.pillar-img {
 }
 
 .cert-lightbox-inner {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  max-width: 90vw;
-  max-height: 80vh;
-  cursor: pointer;
+  align-items: stretch;
+  justify-content: stretch;
   overflow: hidden;
-  border-radius: 10px;
+  background: #323639;
 }
 .cert-lightbox-inner img,
 .cert-lightbox-inner iframe {
-  max-width: 100%;
-  max-height: 78vh;
-  width: 90vw;
-  height: 78vh;
-  object-fit: contain;
-  border-radius: 8px;
-  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
-  background: white;
+  width: 100%;
+  height: 100%;
+  border: none;
   display: block;
-  /* Entry animation when lightbox first opens */
+  background: #323639;
   opacity: 0;
   transition: opacity 0.28s ease;
 }
@@ -1427,6 +1470,7 @@ iframe.pillar-img {
 .cert-lightbox.is-open .cert-lightbox-inner iframe {
   opacity: 1;
 }
+
 /* Slide-nav state classes (added by JS) */
 .cert-lightbox-inner.slide-out-left iframe,
 .cert-lightbox-inner.slide-out-left img {
@@ -1444,29 +1488,18 @@ iframe.pillar-img {
 .cert-lightbox-inner.slide-in-right img {
   animation: cert-slide-in-right 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-.cert-lightbox-caption {
-  margin-top: 1.2rem;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 0.95rem;
-  font-weight: 600;
-  text-align: center;
-  letter-spacing: 0.04em;
-  font-family: 'Roboto Mono', monospace;
-}
-#cert-lightbox-title {
-  transition: opacity 0.18s ease, transform 0.18s ease;
-  will-change: opacity, transform;
-}
+
 .cert-lightbox-nav {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  margin-top: 1.4rem;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  margin-top: 1.1rem;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 9999px;
-  padding: 0.35rem 0.5rem;
+  padding: 0.35rem 0.55rem;
   backdrop-filter: blur(8px);
+  z-index: 10;
 }
 .cert-lightbox-nav-btn {
   display: grid;
@@ -1476,7 +1509,7 @@ iframe.pillar-img {
   border: none;
   border-radius: 50%;
   background: transparent;
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.85);
   font-size: 1.55rem;
   line-height: 1;
   cursor: pointer;
@@ -1485,18 +1518,18 @@ iframe.pillar-img {
   user-select: none;
 }
 .cert-lightbox-nav-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.22);
   color: #fff;
   transform: scale(1.05);
 }
 .cert-lightbox-nav-btn:active {
   transform: scale(0.95);
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.32);
 }
 .cert-lightbox-nav-divider {
   width: 1px;
   height: 22px;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
   border-radius: 1px;
   flex-shrink: 0;
 }

@@ -72,22 +72,6 @@ $profileSocials=array_filter([
 </section>
 
 
-<!-- Fullscreen Certificate Lightbox -->
-<div id="cert-lightbox" class="cert-lightbox" aria-hidden="true">
-  <a class="cert-lightbox-back" href="/?page=about" onclick="closeCertLightbox();return false;" aria-label="Back to Certificates">← Back to Certificates</a>
-  <button class="cert-lightbox-close" onclick="closeCertLightbox()" aria-label="Close">&times;</button>
-  <div class="cert-lightbox-inner" onclick="closeCertLightbox()">
-    <iframe id="cert-lightbox-img" src="" title="Certificate" frameborder="0"></iframe>
-  </div>
-  <div class="cert-lightbox-caption">
-    <p id="cert-lightbox-title"></p>
-  </div>
-  <div class="cert-lightbox-nav">
-    <button class="cert-lightbox-nav-btn" id="cert-lightbox-prev" onclick="event.stopPropagation();navigateCert(-1)" aria-label="Previous certificate">&#8249;</button>
-    <span class="cert-lightbox-nav-divider" aria-hidden="true"></span>
-    <button class="cert-lightbox-nav-btn" id="cert-lightbox-next" onclick="event.stopPropagation();navigateCert(1)" aria-label="Next certificate">&#8250;</button>
-  </div>
-</div>
 <?php elseif($page==='activities'):?>
 <?php page_head('Activities','Activities that sharpen the work.','A clear record of the work, the process, and the lessons that followed.');?><section class="site-width grid gap-5 py-16 md:grid-cols-2"><?php foreach($items as $item):$d=$item['data'];?><a class="panel" href="/?page=activity&slug=<?=e($item['slug'])?>"><p class="label"><?=e($d['date']??$d['category']??'')?></p><h2 class="mt-4 text-2xl font-semibold"><?=e($d['title']??$item['title'])?></h2><p class="mt-3 text-neutral-600"><?=e($d['summary']??'')?></p><span class="mt-6 inline-block font-semibold">Read →</span></a><?php endforeach;?></section>
 <?php elseif($page==='reflections'):?>
@@ -166,7 +150,26 @@ $profileSocials=array_filter([
 <?php else:?><label class="block font-semibold">Title<input class="field" name="title" value="<?=e($item['title'])?>" required></label><label class="block font-semibold">URL slug<input class="field" name="slug" value="<?=e($item['slug'])?>" pattern="[a-z0-9-]+" required></label><label class="block font-semibold">Display order<input class="field" name="sort_order" type="number" value="<?=e($item['sort_order'])?>"></label><label class="block font-semibold">Content data<textarea class="field min-h-96 font-mono text-sm" name="data" required><?=e(json_encode($d,JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE))?></textarea></label><?php endif;?><div class="editor-actions"><button class="button-outline" name="action" value="save">Save draft</button><button class="button" name="action" value="publish">Save & publish</button><?php if($item['is_published']):?><button class="button-outline" name="action" value="unpublish">Unpublish</button><?php endif;?><?php if(in_array($item['type'],['project','activity'],true)):?><button class="button-outline" onclick="return confirm('Delete this item?')" name="action" value="delete">Delete</button><?php endif;?></div></form></section><?php endif;?>
 <?php elseif($page==='layouts'):require_owner()?><section class="site-width max-w-3xl py-12"><p class="label">Paper templates only</p><h1 class="mt-4 text-4xl font-semibold">Resume and reflection layout</h1><p class="mt-3 text-neutral-600">A4 size and one-inch margins are fixed and apply only to printed documents.</p><form method="post" class="panel mt-8 grid gap-5 md:grid-cols-2"><input type="hidden" name="csrf" value="<?=csrf_token()?>"><input type="hidden" name="action" value="layout"><?php select_field('resume_template','Resume template',['classic'=>'Classic','modern'=>'Modern'],$layout);select_field('reflection_template','Reflection template',['academic'=>'Academic','journal'=>'Journal'],$layout);select_field('font_family','Font',['Times New Roman'=>'Times New Roman','Arial'=>'Arial','Georgia'=>'Georgia','Inter'=>'Inter'],$layout);number_field('font_size','Font size',8,14,.5,$layout);number_field('line_height','Line height',1.1,2,.05,$layout);number_field('section_spacing','Section spacing',8,32,1,$layout);?><button class="button md:col-span-2">Save layout</button></form></section>
 <?php else:http_response_code(404);?><section class="site-width py-24"><h1 class="text-5xl font-semibold">Page not found</h1></section><?php endif;?>
-</main><footer class="app-footer no-print border-t border-neutral-200"><div class="site-width flex justify-between py-7 text-sm text-neutral-500"><span>© <?=date('Y')?> <?=e($profile['name']??'Portfolio')?></span><a href="/?page=login">Owner</a></div></footer><script src="/assets/app.js"></script></body></html>
+</main><footer class="app-footer no-print border-t border-neutral-200"><div class="site-width flex justify-between py-7 text-sm text-neutral-500"><span>© <?=date('Y')?> <?=e($profile['name']??'Portfolio')?></span><a href="/?page=login">Owner</a></div></footer>
+<!-- Fullscreen Certificate Lightbox -->
+<div id="cert-lightbox" class="cert-lightbox" aria-hidden="true" onclick="if(event.target===this)closeCertLightbox()">
+  <a class="cert-lightbox-back" href="/?page=about" onclick="closeCertLightbox();return false;" aria-label="Back to Certificates">← Back to Certificates</a>
+  <div class="cert-lightbox-card">
+    <div class="cert-lightbox-header">
+      <h3 id="cert-lightbox-title" class="cert-lightbox-title">Introduction to AI Literacy and Responsible Use</h3>
+      <button class="cert-lightbox-close" onclick="closeCertLightbox()" aria-label="Close">&times;</button>
+    </div>
+    <div class="cert-lightbox-inner">
+      <iframe id="cert-lightbox-img" src="" title="Certificate" frameborder="0"></iframe>
+    </div>
+  </div>
+  <div class="cert-lightbox-nav">
+    <button class="cert-lightbox-nav-btn" id="cert-lightbox-prev" onclick="event.stopPropagation();navigateCert(-1)" aria-label="Previous certificate">&#8249;</button>
+    <span class="cert-lightbox-nav-divider" aria-hidden="true"></span>
+    <button class="cert-lightbox-nav-btn" id="cert-lightbox-next" onclick="event.stopPropagation();navigateCert(1)" aria-label="Next certificate">&#8250;</button>
+  </div>
+</div>
+<script src="/assets/app.js"></script></body></html>
 <?php
 function page_head(string $label,string $title,string $description):void{echo '<header class="border-b border-neutral-200"><div class="site-width py-16"><p class="label">'.e($label).'</p><h1 class="mt-4 text-5xl font-semibold tracking-[-.04em]">'.e($title).'</h1><p class="mt-5 max-w-3xl text-lg text-neutral-600">'.e($description).'</p></div></header>';}
 function doc_section(string $title,string $html):void{echo '<section class="doc-section"><h2>'.e($title).'</h2>'.$html.'</section>';}
