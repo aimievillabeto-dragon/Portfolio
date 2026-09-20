@@ -4,7 +4,7 @@ declare(strict_types=1);
 function e(mixed $value): string { return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8'); }
 function tags(array $items): void { echo '<div class="flex flex-wrap gap-2">'; foreach ($items as $item) echo '<span class="tag">'.e($item).'</span>'; echo '</div>'; }
 ?><!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title><?=e(ucfirst(str_replace('_',' ',$page)))?> — Portfolio</title><meta name="description" content="Developer portfolio, current systems, projects, activities, resume, and reflections."><script>try{const saved=localStorage.getItem('portfolio-theme');document.documentElement.dataset.theme=saved||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(error){}</script><style>html{background:#ead5d1}html[data-theme="dark"]{background:#1e141a}</style><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet"><link rel="stylesheet" href="/assets/style.css"></head><body class="page-<?=e($page)?> bg-theme text-theme antialiased">
-<aside class="sidebar no-print"><a href="/" class="sidebar-name"><span class="brand-camera-icon" aria-hidden="true">✦</span>ePortfolio</a><button id="menu-button" class="sidebar-menu-button" aria-expanded="false" aria-controls="mobile-menu">Menu</button><nav id="mobile-menu" class="sidebar-nav hidden"><a href="/" class="<?=$page==='home'?'active':''?>">Home</a><a href="/?page=about" class="<?=$page==='about'?'active':''?>">About Me</a><details class="sidebar-dropdown" <?=in_array($page,['activities','activity','reflections','reflection','resume'],true)?'open':''?>><summary class="<?=in_array($page,['activities','activity','reflections','reflection','resume'],true)?'active':''?>">Activities <span aria-hidden="true">⌄</span></summary><div class="sidebar-submenu"><a href="/?page=reflections" class="<?=in_array($page,['reflections','reflection'],true)?'active':''?>">Reflections</a><a href="/?page=resume" class="<?=$page==='resume'?'active':''?>">Resume</a></div></details><?php if(owner_logged_in()):?><a href="/?page=admin" class="nav-admin-link">Edit portfolio</a><?php endif;?></nav><div class="active-viewers" aria-live="polite"><span class="active-viewers-dot" aria-hidden="true"></span><svg class="active-viewers-eye" aria-hidden="true" viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.75"/></svg><span><strong id="active-view-count">—</strong> active now</span></div></aside>
+<aside class="sidebar no-print"><a href="/" class="sidebar-name"><span class="brand-camera-icon" aria-hidden="true">✦</span>ePortfolio</a><button id="menu-button" class="sidebar-menu-button" aria-expanded="false" aria-controls="mobile-menu">Menu</button><nav id="mobile-menu" class="sidebar-nav hidden"><a href="/" class="<?=$page==='home'?'active':''?>">Home</a><a href="/?page=about" class="<?=in_array($page,['about','certificates'],true)?'active':''?>">Certificates</a><details class="sidebar-dropdown" <?=in_array($page,['activities','activity','reflections','reflection','resume'],true)?'open':''?>><summary class="<?=in_array($page,['activities','activity','reflections','reflection','resume'],true)?'active':''?>">Activities <span aria-hidden="true">⌄</span></summary><div class="sidebar-submenu"><a href="/?page=reflections" class="<?=in_array($page,['reflections','reflection'],true)?'active':''?>">Reflections</a><a href="/?page=resume" class="<?=$page==='resume'?'active':''?>">Resume</a></div></details><?php if(owner_logged_in()):?><a href="/?page=admin" class="nav-admin-link">Edit portfolio</a><?php endif;?></nav><div class="active-viewers" aria-live="polite"><span class="active-viewers-dot" aria-hidden="true"></span><svg class="active-viewers-eye" aria-hidden="true" viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.75"/></svg><span><strong id="active-view-count">—</strong> active now</span></div></aside>
 <main class="app-main">
 <?php if($page==='home'):?>
 <?php
@@ -17,27 +17,14 @@ $profileSocials=array_filter([
     'email'=>!empty($contact['email'])?'mailto:'.$contact['email']:'',
 ]);
 ?>
-<section class="hero-texture"><div class="site-width landing-profile py-20"><div class="profile-portrait"><div class="profile-photo-wrapper"><div class="photo-backing-card photo-backing-mauve" aria-hidden="true"></div><div class="photo-backing-card photo-backing-peach" aria-hidden="true"></div><div class="profile-photo"><img src="/assets/profile-photo.png" alt="Portrait of Aimie Villabeto D."><div class="photo-shimmer" aria-hidden="true"></div></div></div><div class="profile-name-wrap mt-4"><h1><button id="profile-name-button" class="profile-name-button text-5xl font-semibold tracking-[-.05em]" type="button" aria-expanded="false" aria-controls="profile-full-info"><?=e($profile['name']??'Aimie Villabeto')?></button></h1><span class="name-tap-cursor" aria-hidden="true">☝</span></div><div id="profile-full-info" class="profile-full-info" hidden><p class="label">Full information</p><dl><div><dt>Name</dt><dd><?=e($profile['full_name']??'Aimie Villabeto D.')?></dd></div><div><dt>Address</dt><dd><?=e($profile['address']??'Regla, Guipos, Zamboanga del Sur')?></dd></div><div><dt>Age</dt><dd><?=e($profile['age']??'21')?></dd></div><div><dt>Birthdate</dt><dd><?=e($profile['birthdate']??'March 7, 2005')?></dd></div><div><dt>Sex</dt><dd><?=e($profile['sex']??'Female')?></dd></div><div><dt>School</dt><dd><?=e($profile['school']??'JH Cerilles State College')?></dd></div><div><dt>Course &amp; Year</dt><dd><?=e($profile['course_year']??'Bachelor of Information Technology — 4th Year')?></dd></div><div><dt>Dream Job</dt><dd><?=e($profile['dream_job']??'Developer')?></dd></div></dl></div></div><div class="profile-intro"><p class="mt-5 max-w-2xl text-lg text-neutral-600"><?=e($profile['intro'] ?? "I'm Aimie Villabeto. An IT student who enjoys turning ideas into functional digital solutions. Here, you'll find a collection of my projects, skills, experiences, and the things I've learned along the way.")?></p><p class="mt-3 max-w-2xl text-neutral-600"><?=e($profile['biography']??'')?></p><div class="profile-meta"><span><?=e($profile['location']??'Regla, Guipos, Zamboanga del Sur')?></span><span><?=e($profile['availability']??'Open to collaborations')?></span></div></div></div></section>
-<?php elseif($page==='about'):?>
-<?php page_head('About Me',"Passionate about Web Development, Database Management, and Cybersecurity.",$profile['biography']??"I enjoy creating functional and organized systems through web development and database management. I also have experience in capstone manuscript preparation and research documentation. Currently, I'm exploring cybersecurity to expand my technical knowledge and develop a better understanding of digital security practices.");?>
-<section class="site-width grid gap-10 py-16 md:grid-cols-[1fr_320px]">
-  <div>
-    <div class="mt-6 space-y-4 text-lg text-neutral-600 leading-relaxed">
-      <p>I enjoy creating functional and organized systems through web development and database management. I also have experience in capstone manuscript preparation and research documentation. Currently, I'm exploring cybersecurity to expand my technical knowledge and develop a better understanding of digital security practices.</p>
-    </div>
-  </div>
-  <aside class="panel">
-    <p class="label">Currently Learning</p>
-    <div class="mt-5"><?php tags(['HTML', 'CSS', 'PHP', 'Cybersecurity', 'Database Management']);?></div>
-  </aside>
-</section>
-
+<section class="hero-texture"><div class="site-width landing-profile py-20"><div class="profile-portrait"><div class="profile-photo-wrapper"><div class="photo-backing-card photo-backing-mauve" aria-hidden="true"></div><div class="photo-backing-card photo-backing-peach" aria-hidden="true"></div><div class="profile-photo"><img src="/assets/profile-photo.png" alt="Portrait of Aimie Villabeto D."><div class="photo-shimmer" aria-hidden="true"></div></div></div><div class="profile-name-wrap mt-4"><h1><button id="profile-name-button" class="profile-name-button text-5xl font-semibold tracking-[-.05em]" type="button" aria-expanded="false" aria-controls="profile-full-info"><?=e($profile['name']??'Aimie Villabeto')?></button></h1><span class="name-tap-cursor" aria-hidden="true">☝</span></div><div id="profile-full-info" class="profile-full-info" hidden><p class="label">Full information</p><dl><div><dt>Name</dt><dd><?=e($profile['full_name']??'Aimie Villabeto D.')?></dd></div><div><dt>Address</dt><dd><?=e($profile['address']??'Regla, Guipos, Zamboanga del Sur')?></dd></div><div><dt>Age</dt><dd><?=e($profile['age']??'21')?></dd></div><div><dt>Birthdate</dt><dd><?=e($profile['birthdate']??'March 7, 2005')?></dd></div><div><dt>Sex</dt><dd><?=e($profile['sex']??'Female')?></dd></div><div><dt>School</dt><dd><?=e($profile['school']??'JH Cerilles State College')?></dd></div><div><dt>Course &amp; Year</dt><dd><?=e($profile['course_year']??'Bachelor of Information Technology — 4th Year')?></dd></div><div><dt>Dream Job</dt><dd><?=e($profile['dream_job']??'Developer')?></dd></div></dl></div></div><div class="profile-intro"><p class="mt-5 max-w-2xl text-lg text-neutral-600"><?=e($profile['intro'] ?? "I'm Aimie Villabeto. An IT student who enjoys turning ideas into functional digital solutions. Here, you'll find a collection of my projects, skills, experiences, and the things I've learned along the way.")?></p><p class="mt-3 max-w-2xl text-neutral-600"><?=e($profile['biography']??'')?></p><div class="profile-meta"><span><?=e($profile['location']??'Regla, Guipos, Zamboanga del Sur')?></span><span><?=e($profile['availability']??'Open to collaborations')?></span></div><aside class="panel profile-learning-panel mt-8 max-w-md"><p class="label">Currently Learning</p><div class="mt-5"><?php tags(['HTML', 'CSS', 'PHP', 'Cybersecurity', 'Database Management']);?></div></aside></div></div></section>
+<?php elseif(in_array($page,['about','certificates'],true)):?>
 <section class="site-width py-16 achievements-theme-showcase">
   <div class="theme-album-header">
     <div class="theme-album-intro">
       <p class="label">Featured Achievements</p>
-      <h2 class="theme-album-title">Academic &amp; Project<br>Honors Album</h2>
-      <p class="theme-album-subtitle">All certificates, awards, and recognitions earned during the Bachelor of Science in Information Technology journey at JH Cerilles State College.</p>
+      <h2 class="theme-album-title">Learning &amp; Course<br>Certificates</h2>
+      <p class="theme-album-subtitle">Certificates earned through completed online courses and learning programs as part of my continuous learning journey in Information Technology.</p>
       <div class="flex items-center gap-4 mt-6">
         <a href="/?page=resume" class="theme-pill-btn">View Full Resume</a>
       </div>
@@ -50,15 +37,15 @@ $profileSocials=array_filter([
       <article class="theme-pillar theme-pillar-peach" onclick="openCertModal(0)">
         <div class="pillar-polaroid-wrap">
           <div class="pillar-polaroid pillar-polaroid-tilted-left">
-            <img src="/assets/achievements/academic-achiever-2026.jpg" alt="Academic Achiever Certificate" class="pillar-img">
-            <div class="pillar-polaroid-label">GWA 1.54</div>
+            <iframe src="/assets/achievements/ai-literacy.pdf#toolbar=0&navpanes=0&scrollbar=0&view=Fit" class="pillar-img" style="pointer-events:none; border:none; overflow:hidden;" scrolling="no"></iframe>
+            <div class="pillar-polaroid-label">AI Literacy</div>
           </div>
         </div>
         <div class="pillar-body">
           <span class="pillar-number">01.</span>
-          <h3 class="pillar-title">Academic Achiever</h3>
-          <p class="pillar-meta">GWA 1.54 · BSIT 1st Sem AY 2025–2026</p>
-          <p class="pillar-desc">Certificate of Recognition for outstanding academic excellence and dedication at JHCSC School of Computing Studies.</p>
+          <h3 class="pillar-title">Introduction to AI Literacy and Responsible Use</h3>
+          <p class="pillar-meta">September 14, 2026 · Mapúa University</p>
+          <p class="pillar-desc">Successfully completed the micro-credentials course on Introduction to AI Literacy and Responsible Use.</p>
           <button type="button" class="pillar-action-pill" onclick="event.stopPropagation();openCertModal(0)">View Certificate ↗</button>
         </div>
       </article>
@@ -67,15 +54,15 @@ $profileSocials=array_filter([
       <article class="theme-pillar theme-pillar-cream" onclick="openCertModal(1)">
         <div class="pillar-polaroid-wrap">
           <div class="pillar-polaroid pillar-polaroid-tilted-right">
-            <img src="/assets/achievements/hackathon-3rd-place-2026.jpg" alt="3rd Place Hackathon Certificate" class="pillar-img">
-            <div class="pillar-polaroid-label">3rd Place</div>
+            <iframe src="/assets/achievements/cybersecurity.pdf#toolbar=0&navpanes=0&scrollbar=0&view=Fit" class="pillar-img" style="pointer-events:none; border:none; overflow:hidden;" scrolling="no"></iframe>
+            <div class="pillar-polaroid-label">Cybersecurity</div>
           </div>
         </div>
         <div class="pillar-body">
           <span class="pillar-number">02.</span>
-          <h3 class="pillar-title">Hackathon 3rd Place</h3>
-          <p class="pillar-meta">Cyberian Fest 2026 · JHCSC Gym</p>
-          <p class="pillar-desc">Awarded for remarkable performance, teamwork, and problem-solving excellence in the Cyberian Fest 2026 Hackathon.</p>
+          <h3 class="pillar-title">Introduction to Cybersecurity</h3>
+          <p class="pillar-meta">September 12, 2026 · Cisco Networking Academy</p>
+          <p class="pillar-desc">Successfully completed the Introduction to Cybersecurity course offered by DICT-ITU DTC Initiative.</p>
           <button type="button" class="pillar-action-pill" onclick="event.stopPropagation();openCertModal(1)">View Certificate ↗</button>
         </div>
       </article>
@@ -87,24 +74,89 @@ $profileSocials=array_filter([
 
 <!-- Fullscreen Certificate Lightbox -->
 <div id="cert-lightbox" class="cert-lightbox" aria-hidden="true">
-  <button class="cert-lightbox-back" onclick="closeCertLightbox()">← Back to About Me</button>
+  <a class="cert-lightbox-back" href="/?page=about" onclick="closeCertLightbox();return false;" aria-label="Back to Certificates">← Back to Certificates</a>
   <button class="cert-lightbox-close" onclick="closeCertLightbox()" aria-label="Close">&times;</button>
   <div class="cert-lightbox-inner" onclick="closeCertLightbox()">
-    <img id="cert-lightbox-img" src="" alt="Certificate">
+    <iframe id="cert-lightbox-img" src="" title="Certificate" frameborder="0"></iframe>
   </div>
   <div class="cert-lightbox-caption">
     <p id="cert-lightbox-title"></p>
   </div>
+  <div class="cert-lightbox-nav">
+    <button class="cert-lightbox-nav-btn" id="cert-lightbox-prev" onclick="event.stopPropagation();navigateCert(-1)" aria-label="Previous certificate">&#8249;</button>
+    <span class="cert-lightbox-nav-divider" aria-hidden="true"></span>
+    <button class="cert-lightbox-nav-btn" id="cert-lightbox-next" onclick="event.stopPropagation();navigateCert(1)" aria-label="Next certificate">&#8250;</button>
+  </div>
 </div>
 <?php elseif($page==='activities'):?>
 <?php page_head('Activities','Activities that sharpen the work.','A clear record of the work, the process, and the lessons that followed.');?><section class="site-width grid gap-5 py-16 md:grid-cols-2"><?php foreach($items as $item):$d=$item['data'];?><a class="panel" href="/?page=activity&slug=<?=e($item['slug'])?>"><p class="label"><?=e($d['date']??$d['category']??'')?></p><h2 class="mt-4 text-2xl font-semibold"><?=e($d['title']??$item['title'])?></h2><p class="mt-3 text-neutral-600"><?=e($d['summary']??'')?></p><span class="mt-6 inline-block font-semibold">Read →</span></a><?php endforeach;?></section>
+<?php elseif($page==='reflections'):?>
+<?php page_head('Reflections','Reflections and Learning Experiences','A collection of my reflections, insights, and learning experiences gained from different academic activities, online courses, and hands-on experiences throughout my learning journey.');?>
+<section class="site-width reflections-grid py-16">
+<?php if(empty($items)):?>
+  <div class="refl-empty"><p>No reflections published yet.</p></div>
+<?php else:?>
+  <?php foreach($items as $index => $item): $d=$item['data'] ?? []; ?>
+    <?php
+      $preview = '';
+      if (!empty($d['paragraphs']) && is_array($d['paragraphs'])) {
+          $preview = $d['paragraphs'][0] ?? '';
+      } elseif (!empty($d['content'])) {
+          $preview = $d['content'];
+      } elseif (!empty($d['summary'])) {
+          $preview = $d['summary'];
+      }
+      if (mb_strlen($preview) > 200) {
+          $preview = mb_substr($preview, 0, 200) . '…';
+      }
+      $num = str_pad((string)($index + 1), 2, '0', STR_PAD_LEFT);
+    ?>
+    <article class="refl-card">
+      <div class="refl-card-accent"></div>
+      <div class="refl-card-body">
+        <div class="refl-card-top">
+          <span class="refl-num"><?=e($num)?></span>
+          <div class="refl-meta-group">
+            <span class="label">Activity <?=($index+1)?> · Reflection</span>
+            <?php if(!empty($d['date'])):?>
+              <span class="refl-date"><?=e(date('M d, Y', strtotime($d['date'])))?></span>
+            <?php endif;?>
+          </div>
+        </div>
+        <h2 class="refl-title"><?=e($d['title'] ?? $item['title'])?></h2>
+        <?php if($preview):?>
+          <p class="refl-preview"><?=e($preview)?></p>
+        <?php endif;?>
+        <div class="refl-card-footer">
+          <?php if(!empty($d['course'])):?>
+            <span class="refl-course"><?=e($d['course'])?></span>
+          <?php else:?>
+            <span></span>
+          <?php endif;?>
+          <a href="/?page=reflection&slug=<?=e($item['slug'])?>" class="refl-btn">
+            View Reflection
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </article>
+  <?php endforeach;?>
+<?php endif;?>
+</section>
 <?php elseif($page==='activity'): if(!$item):http_response_code(404);echo '<div class="site-width py-20"><h1>Not found</h1></div>';else:$d=$item['data'];?>
 <?php page_head(ucfirst($page),$d['title']??$item['title'],$d['summary']??'');?><article class="site-width max-w-3xl py-16"><p class="text-lg text-neutral-700"><?=nl2br(e($d['description']??''))?></p><?php $list=$d['highlights']??$d['outcomes']??[];if($list):?><h2 class="mt-10 text-2xl font-semibold">Highlights</h2><ul class="mt-4 list-disc space-y-2 pl-6"><?php foreach($list as $line):?><li><?=e($line)?></li><?php endforeach;?></ul><?php endif;?></article><?php endif;?>
 <?php elseif($page==='resume'): $d=$item['data']??[];?>
 <?php if(!empty($d['uploaded_pdf'])):?><div class="site-width resume-uploaded-preview"><div class="imported-pdf-shell"><iframe src="<?=e($d['uploaded_pdf'])?>" title="Imported resume PDF"></iframe><a class="button-outline no-print" href="<?=e($d['uploaded_pdf'])?>" download="<?=e($d['uploaded_pdf_name']??'resume.pdf')?>">Download PDF</a></div></div><?php endif;?>
 <section class="site-width py-10 resume-page"><div class="no-print mb-5"><p class="label">Resume document</p><h1 class="mt-2 text-3xl font-semibold">Resume</h1></div></section>
 <?php elseif($page==='reflection'): if(!$item):http_response_code(404);echo 'Not found';else:$d=$item['data']?>
-<section class="site-width py-10"><div class="no-print mb-5 flex items-center justify-between"><div><h1 class="text-3xl font-semibold">Activity 1. Reflection</h1></div><?php if(!empty($d['uploaded_pdf'])):?><a class="button" href="<?=e($d['uploaded_pdf'])?>" target="_blank" rel="noreferrer">Open / Print PDF</a><?php else:?><button onclick="window.print()" class="button">Print / Save PDF</button><?php endif;?></div><?php if(!empty($d['uploaded_pdf'])):?><div class="imported-pdf-shell"><iframe src="<?=e($d['uploaded_pdf'])?>" title="Imported reflection PDF"></iframe><a class="button-outline no-print" href="<?=e($d['uploaded_pdf'])?>" download="<?=e($d['uploaded_pdf_name']??'reflection.pdf')?>">Download PDF</a></div><?php else:?><div class="paper-shell"><article class="paper reflection <?=e($layout['reflection_template']??'academic')?>" style="--doc-size:<?=e($layout['font_size']??12)?>pt;--doc-line:<?=e($layout['line_height']??1.5)?>;--doc-space:<?=e($layout['section_spacing']??16)?>px;font-family:<?=e($layout['font_family']??'Times New Roman')?>,'Times New Roman',Times,serif"><header class="reflection-document-header text-center"><h1 class="text-3xl font-bold text-center" style="font-family:'Times New Roman',Times,serif;line-height:1.5"><?=e($d['title']??'Becoming a Professional IT Practitioner')?></h1></header><div class="reflection-body mt-6 space-y-5 text-justify leading-relaxed"><?php if(!empty($d['paragraphs'])&&is_array($d['paragraphs'])):foreach($d['paragraphs'] as $p):if(trim((string)$p)!=='')echo '<p class="leading-relaxed text-justify mb-5">'.e(trim((string)$p)).'</p>';endforeach;elseif(!empty($d['content'])):$paragraphs=preg_split('/\r?\n\s*\r?\n/',trim((string)$d['content']));foreach($paragraphs as $p):if(trim($p)!=='')echo '<p class="leading-relaxed text-justify mb-5">'.e(trim($p)).'</p>';endforeach;else:if(!empty($d['activity']))doc_section('Activity','<p>'.e($d['activity']).'</p>');foreach(['Experience'=>'experience','Observations'=>'observations','Learning'=>'learning','Next Steps'=>'next_steps','Conclusion'=>'conclusion'] as $label=>$key)if(!empty($d[$key]))doc_section($label,'<p>'.e($d[$key]).'</p>');endif;?></div></article></div><?php endif;?><?php if(!empty($d['uploaded_word'])):?><p class="no-print mt-5"><a class="button-outline" href="<?=e($d['uploaded_word'])?>" download="<?=e($d['uploaded_word_name']??'reflection.docx')?>">Download uploaded Word file</a></p><?php endif;?></section><?php endif;?>
+<section class="site-width py-10">
+<div class="no-print mb-6">
+  <a href="/?page=reflections" class="button-outline text-sm mb-4 inline-flex items-center gap-2">← Back to Reflections</a>
+  <div class="flex items-center justify-between">
+    <div><h1 class="text-3xl font-semibold">Activity 1. Reflection</h1></div>
+  </div>
+</div>
+<?php if(!empty($d['uploaded_pdf'])):?><div class="imported-pdf-shell"><iframe src="<?=e($d['uploaded_pdf'])?>" title="Imported reflection PDF"></iframe><a class="button-outline no-print" href="<?=e($d['uploaded_pdf'])?>" download="<?=e($d['uploaded_pdf_name']??'reflection.pdf')?>">Download PDF</a></div><?php else:?><div class="paper-shell"><article class="paper reflection <?=e($layout['reflection_template']??'academic')?>" style="--doc-size:<?=e($layout['font_size']??12)?>pt;--doc-line:<?=e($layout['line_height']??1.5)?>;--doc-space:<?=e($layout['section_spacing']??16)?>px;font-family:<?=e($layout['font_family']??'Times New Roman')?>,'Times New Roman',Times,serif"><header class="reflection-document-header text-center"><h1 class="text-3xl font-bold text-center" style="font-family:'Times New Roman',Times,serif;line-height:1.5"><?=e($d['title']??'Becoming a Professional IT Practitioner')?></h1></header><div class="reflection-body mt-6 space-y-5 text-justify leading-relaxed"><?php if(!empty($d['paragraphs'])&&is_array($d['paragraphs'])):foreach($d['paragraphs'] as $p):if(trim((string)$p)!=='')echo '<p class="leading-relaxed text-justify mb-5">'.e(trim((string)$p)).'</p>';endforeach;elseif(!empty($d['content'])):$paragraphs=preg_split('/\r?\n\s*\r?\n/',trim((string)$d['content']));foreach($paragraphs as $p):if(trim($p)!=='')echo '<p class="leading-relaxed text-justify mb-5">'.e(trim($p)).'</p>';endforeach;else:if(!empty($d['activity']))doc_section('Activity','<p>'.e($d['activity']).'</p>');foreach(['Experience'=>'experience','Observations'=>'observations','Learning'=>'learning','Next Steps'=>'next_steps','Conclusion'=>'conclusion'] as $label=>$key)if(!empty($d[$key]))doc_section($label,'<p>'.e($d[$key]).'</p>');endif;?></div></article></div><?php endif;?><?php if(!empty($d['uploaded_word'])):?><p class="no-print mt-5"><a class="button-outline" href="<?=e($d['uploaded_word'])?>" download="<?=e($d['uploaded_word_name']??'reflection.docx')?>">Download uploaded Word file</a></p><?php endif;?></section><?php endif;?>
 <?php elseif($page==='login'):?><section class="site-width flex min-h-[70vh] items-center justify-center py-16"><form method="post" class="panel w-full max-w-md"><input type="hidden" name="csrf" value="<?=csrf_token()?>"><input type="hidden" name="action" value="login"><p class="label">Owner access</p><h1 class="mt-4 text-3xl font-semibold">Sign in</h1><?php if($error):?><p class="mt-4 border border-neutral-400 bg-neutral-100 p-3"><?=e($error)?></p><?php endif;?><label class="mt-6 block text-sm font-semibold">Email<input class="field" name="email" type="email" required></label><label class="mt-4 block text-sm font-semibold">Password<input class="field" name="password" type="password" required></label><button class="button mt-6 w-full">Sign in</button></form></section>
 <?php elseif($page==='admin'):require_owner();?><?php page_head('Admin','Portfolio content','Edit drafts and publish only when the content is ready.');?><section class="site-width admin-dashboard py-12"><?php if($error):?><p class="admin-alert"><?=e($error)?></p><?php endif;?><div class="admin-toolbar"><div class="admin-toolbar-actions"><a class="button-outline" href="/?page=layouts">Paper templates</a><?php foreach(['activity','reflection'] as $newType):?><form method="post"><input type="hidden" name="csrf" value="<?=csrf_token()?>"><input type="hidden" name="action" value="create"><input type="hidden" name="type" value="<?=$newType?>"><button class="button-outline">New <?=e($newType)?></button></form><?php endforeach;?><?php if(!array_filter($items,fn($entry)=>$entry['type']==='reflection')):?><form method="post"><input type="hidden" name="csrf" value="<?=csrf_token()?>"><input type="hidden" name="action" value="restore_reflection"><button class="button">Restore reflection</button></form><?php endif;?></div><form method="post"><input type="hidden" name="csrf" value="<?=csrf_token()?>"><input type="hidden" name="action" value="logout"><button class="admin-signout">Sign out</button></form></div><div class="admin-summary"><div><strong><?=count($items)?></strong><span>Total entries</span></div><div><strong><?=count(array_filter($items,fn($entry)=>!empty($entry['is_published'])))?></strong><span>Published</span></div><div><strong><?=count(array_filter($items,fn($entry)=>empty($entry['is_published'])))?></strong><span>Drafts</span></div></div><div class="admin-content-grid"><?php foreach($items as $item):?><article class="admin-content-card"><div class="admin-card-top"><span class="admin-type"><?=e(str_replace('_',' ',$item['type']))?></span><span class="admin-status <?=$item['is_published']?'is-published':'is-draft'?>"><?=$item['is_published']?'Published':'Draft'?></span></div><h2><?=e($item['title'])?></h2><?php if(in_array($item['type'],['resume','reflection'],true)):?><form class="pdf-import-form" method="post" enctype="multipart/form-data"><input type="hidden" name="csrf" value="<?=csrf_token()?>"><input type="hidden" name="action" value="upload_pdf"><input type="hidden" name="id" value="<?=e($item['id'])?>"><label><span>Import PDF</span><input name="pdf" type="file" accept="application/pdf,.pdf" required></label><button>Upload</button></form><?php endif;?><div class="admin-card-footer"><span>Content entry</span><a href="/?page=edit&id=<?=e($item['id'])?>">Edit <span aria-hidden="true">→</span></a></div></article><?php endforeach;?></div></section>
 <?php elseif($page==='edit'):require_owner();if(!$item):echo 'Not found';else:$d=$item['data'];?>

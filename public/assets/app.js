@@ -103,11 +103,11 @@ themeToggle.addEventListener('click',()=>{
 
 const button=document.querySelector('#menu-button');const menu=document.querySelector('#mobile-menu');button?.addEventListener('click',()=>{menu?.classList.toggle('hidden');button.setAttribute('aria-expanded',String(!menu?.classList.contains('hidden')))});
 const mainNavigation=document.querySelector('.sidebar-nav');
-if(mainNavigation&&!mainNavigation.querySelector('a[href*="page=about"]')){
-  const aboutLink=document.createElement('a');
-  aboutLink.href='/?page=about';
-  aboutLink.textContent='About Me';
-  mainNavigation.querySelector('a')?.after(aboutLink);
+if(mainNavigation&&!mainNavigation.querySelector('a[href*="page=about"], a[href*="page=certificates"]')){
+  const certLink=document.createElement('a');
+  certLink.href='/?page=about';
+  certLink.textContent='Certificates';
+  mainNavigation.querySelector('a')?.after(certLink);
 }
 const activeViewCount=document.querySelector('#active-view-count');
 const updateActiveViews=async()=>{
@@ -224,8 +224,8 @@ document.querySelectorAll('a[download]').forEach((link)=>{
    Polaroid photo stack — cycle & lightbox
    ============================================================ */
 const CERTS = [
-  { src: '/assets/achievements/academic-achiever-2026.jpg',   label: 'Academic Achiever · GWA 1.54'    },
-  { src: '/assets/achievements/hackathon-3rd-place-2026.jpg', label: '3rd Place — Hackathon · 2026'     },
+  { src: '/assets/achievements/ai-literacy.pdf#toolbar=0&navpanes=0&scrollbar=0&view=Fit',   label: 'Introduction to AI Literacy'    },
+  { src: '/assets/achievements/cybersecurity.pdf#toolbar=0&navpanes=0&scrollbar=0&view=Fit', label: 'Introduction to Cybersecurity'     },
   { src: '/assets/profile-photo.png',                         label: 'Aimie Villabeto · BSIT Student Developer' }
 ];
 let currentCert = 0;
@@ -287,19 +287,84 @@ window.cyclePolaroid = function() {
   }, 520);
 };
 
+/** Track the currently open cert index in the lightbox */
+let openCertIdx = 0;
+
 /** Open full-screen lightbox for a given cert index */
 window.openCertModal = function(idx) {
+  openCertIdx = idx;
   const cert  = CERTS[idx];
   const lb    = document.getElementById('cert-lightbox');
-  const img   = document.getElementById('cert-lightbox-img');
+  const frame = document.getElementById('cert-lightbox-img');
   const title = document.getElementById('cert-lightbox-title');
-  if (!lb || !img) return;
-  img.src = cert.src;
-  img.alt = cert.label;
+  if (!lb || !frame) return;
+  frame.src = cert.src;
+  frame.title = cert.label;
   if (title) title.textContent = cert.label;
   lb.classList.add('is-open');
   lb.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
+  // Update nav button visibility (hide prev/next if only 1 cert)
+  const nav = document.querySelector('.cert-lightbox-nav');
+  if (nav) nav.style.display = CERTS.length > 1 ? 'flex' : 'none';
+};
+
+let certNavBusy = false;
+
+/** Navigate to prev (-1) or next (+1) cert inside the lightbox */
+window.navigateCert = function(direction) {
+  if (certNavBusy) return;
+  const total    = CERTS.length;
+  // Only navigate through actual certificates (skip profile photo at index 2)
+  const certOnly = CERTS.map((_, i) => i).filter(i => i < total - 1);
+  const currentPos = certOnly.indexOf(openCertIdx);
+  let nextPos = currentPos + direction;
+  if (nextPos < 0 || nextPos >= certOnly.length) {
+    window.closeCertLightbox();
+    return;
+  }
+  const nextIdx = certOnly[nextPos];
+  if (nextIdx === openCertIdx) return;
+
+  certNavBusy = true;
+  const inner  = document.querySelector('.cert-lightbox-inner');
+  const frame  = document.getElementById('cert-lightbox-img');
+  const title  = document.getElementById('cert-lightbox-title');
+  const cert   = CERTS[nextIdx];
+
+  // Pick slide directions: going next → slide left; going prev → slide right
+  const outClass = direction > 0 ? 'slide-out-left'  : 'slide-out-right';
+  const inClass  = direction > 0 ? 'slide-in-left'   : 'slide-in-right';
+
+  // Step 1 — slide out current
+  if (inner) inner.classList.add(outClass);
+
+  // Caption fade out
+  if (title) { title.style.opacity = '0'; title.style.transform = 'translateY(6px)'; title.style.transition = 'opacity 0.18s ease, transform 0.18s ease'; }
+
+  setTimeout(() => {
+    // Step 2 — swap src & remove out class
+    if (inner) { inner.classList.remove(outClass); }
+    if (frame) { frame.src = cert.src; frame.title = cert.label; }
+    openCertIdx = nextIdx;
+
+    // Step 3 — slide in new
+    if (inner) inner.classList.add(inClass);
+
+    // Caption fade in
+    if (title) {
+      title.style.transform = 'translateY(-6px)';
+      requestAnimationFrame(() => {
+        if (title) { title.textContent = cert.label; title.style.opacity = '1'; title.style.transform = 'translateY(0)'; }
+      });
+    }
+
+    // Step 4 — clean up after slide-in
+    setTimeout(() => {
+      if (inner) inner.classList.remove(inClass);
+      certNavBusy = false;
+    }, 340);
+  }, 230);
 };
 
 window.closeCertLightbox = function() {
@@ -308,11 +373,20 @@ window.closeCertLightbox = function() {
   lb.classList.remove('is-open');
   lb.setAttribute('aria-hidden', 'true');
   document.body.style.overflow = '';
+  const frame = document.getElementById('cert-lightbox-img');
+  if (frame) setTimeout(() => { frame.src = ''; }, 350);
 };
 
 document.addEventListener('keydown', function(e) {
+  const lb = document.getElementById('cert-lightbox');
+  const lightboxOpen = lb && lb.classList.contains('is-open');
   if (e.key === 'Escape') window.closeCertLightbox();
-  if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') window.cyclePolaroid();
+  if (lightboxOpen) {
+    if (e.key === 'ArrowRight') window.navigateCert(1);
+    if (e.key === 'ArrowLeft')  window.navigateCert(-1);
+  } else {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') window.cyclePolaroid();
+  }
 });
 
 // Init active state on page load

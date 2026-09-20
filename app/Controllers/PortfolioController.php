@@ -29,13 +29,6 @@ final class PortfolioController
                 ? 'The upload is larger than the hosting limit of ' . ini_get('post_max_size') . '. Compress the file and try again.'
                 : $this->handlePost();
         }
-        if ($page === 'reflections') {
-            $reflection = $this->content->publishedOne('reflection');
-            if ($reflection) {
-                header('Location: /?page=reflection&slug=' . urlencode($reflection['slug']));
-                exit;
-            }
-        }
 
         View::render('portfolio', [
             'page' => $page,
@@ -79,8 +72,8 @@ final class PortfolioController
     {
         return match ($page) {
             'home' => [],
-            'about' => ['system' => $this->content->publishedOne('current_system')['data'] ?? []],
-            'activities' => $this->listingData($page),
+            'about', 'certificates' => ['system' => $this->content->publishedOne('current_system')['data'] ?? []],
+            'activities', 'reflections' => $this->listingData($page),
             'activity', 'reflection' => ['item' => $this->content->publishedOne($page, $slug), 'layout' => $this->content->layoutSettings()],
             'resume' => ['item' => $this->content->publishedOne('resume'), 'layout' => $this->content->layoutSettings()],
             'admin' => ['items' => array_values(array_filter(
