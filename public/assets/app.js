@@ -224,8 +224,9 @@ document.querySelectorAll('a[download]').forEach((link)=>{
    Polaroid photo stack — cycle & lightbox
    ============================================================ */
 const CERTS = [
-  { src: '/assets/achievements/ai-literacy.pdf#navpanes=1',   label: 'Introduction to AI Literacy and Responsible Use'    },
-  { src: '/assets/achievements/cybersecurity.pdf#navpanes=1', label: 'Introduction to Cybersecurity'     },
+  { src: '/assets/achievements/ai-literacy.pdf#navpanes=1',   label: 'Introduction to AI Literacy and Responsible Use' },
+  { src: '/assets/achievements/cybersecurity.pdf#navpanes=1', label: 'Introduction to Cybersecurity' },
+  { src: '/assets/achievements/ai-power-user.pdf#navpanes=1', label: 'AI Power User Launchpad' },
   { src: '/assets/profile-photo.png',                         label: 'Aimie Villabeto · BSIT Student Developer' }
 ];
 let currentCert = 0;
@@ -315,14 +316,12 @@ let certNavBusy = false;
 window.navigateCert = function(direction) {
   if (certNavBusy) return;
   const total    = CERTS.length;
-  // Only navigate through actual certificates (skip profile photo at index 2)
+  // Only navigate through actual certificates (skip profile photo at the end)
   const certOnly = CERTS.map((_, i) => i).filter(i => i < total - 1);
   const currentPos = certOnly.indexOf(openCertIdx);
   let nextPos = currentPos + direction;
-  if (nextPos < 0 || nextPos >= certOnly.length) {
-    window.closeCertLightbox();
-    return;
-  }
+  if (nextPos < 0) nextPos = certOnly.length - 1;
+  if (nextPos >= certOnly.length) nextPos = 0;
   const nextIdx = certOnly[nextPos];
   if (nextIdx === openCertIdx) return;
 

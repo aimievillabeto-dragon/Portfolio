@@ -67,6 +67,23 @@ $profileSocials=array_filter([
         </div>
       </article>
 
+      <!-- Column 03 (Rich Mauve Rose) -->
+      <article class="theme-pillar theme-pillar-mauve" onclick="openCertModal(2)">
+        <div class="pillar-polaroid-wrap">
+          <div class="pillar-polaroid pillar-polaroid-tilted-left">
+            <iframe src="/assets/achievements/ai-power-user.pdf#toolbar=0&navpanes=0&scrollbar=0&view=Fit" class="pillar-img" style="pointer-events:none; border:none; overflow:hidden;" scrolling="no"></iframe>
+            <div class="pillar-polaroid-label">AI Power User</div>
+          </div>
+        </div>
+        <div class="pillar-body">
+          <span class="pillar-number">03.</span>
+          <h3 class="pillar-title">AI Power User Launchpad</h3>
+          <p class="pillar-meta">September 23, 2026 · Cisco Networking Academy</p>
+          <p class="pillar-desc">Successfully completed the AI Power User Launchpad course offered by DICT-ITU DTC Initiative through Cisco Networking Academy.</p>
+          <button type="button" class="pillar-action-pill" onclick="event.stopPropagation();openCertModal(2)">View Certificate ↗</button>
+        </div>
+      </article>
+
     </div>
   </div>
 </section>

@@ -1129,12 +1129,12 @@ html[data-theme="dark"] .refl-btn:hover { background: #fff; }
   100% { transform: translate(-50%, 0); opacity: 0; }
 }
 
-/* 2 Pillars Grid Centered */
+/* 3 Pillars Grid */
 .theme-pillars-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 420px));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   justify-content: center;
-  gap: 2.2rem;
+  gap: 1.8rem;
   align-items: stretch;
 }
 
