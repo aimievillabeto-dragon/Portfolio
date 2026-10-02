@@ -227,6 +227,7 @@ const CERTS = [
   { src: '/assets/achievements/ai-literacy.pdf#navpanes=1',   label: 'Introduction to AI Literacy and Responsible Use' },
   { src: '/assets/achievements/cybersecurity.pdf#navpanes=1', label: 'Introduction to Cybersecurity' },
   { src: '/assets/achievements/ai-power-user.pdf#navpanes=1', label: 'AI Power User Launchpad' },
+  { src: '/assets/achievements/soft-skills-seminar.pdf#navpanes=1', label: 'Soft Skills Seminar' },
   { src: '/assets/profile-photo.png',                         label: 'Aimie Villabeto · BSIT Student Developer' }
 ];
 let currentCert = 0;

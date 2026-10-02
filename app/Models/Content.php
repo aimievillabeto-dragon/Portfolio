@@ -19,7 +19,11 @@ final class Content
 
         $statement = db()->prepare('SELECT id,type,slug,title,published_data AS data,is_published,sort_order FROM content_documents WHERE type=? AND is_published=1 ORDER BY sort_order,id');
         $statement->execute([$type]);
-        return array_map(fn (array $row): array => [...$row, 'data' => json_decode($row['data'], true)], $statement->fetchAll());
+        $rows = array_map(fn (array $row): array => [...$row, 'data' => json_decode($row['data'], true)], $statement->fetchAll());
+        if (empty($rows)) {
+            return array_values(array_filter($this->samples(), fn (array $item): bool => $item['type'] === $type));
+        }
+        return $rows;
     }
 
     public function publishedOne(string $type, ?string $slug = null): ?array

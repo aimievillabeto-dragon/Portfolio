@@ -4,7 +4,7 @@ declare(strict_types=1);
 function e(mixed $value): string { return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8'); }
 function tags(array $items): void { echo '<div class="flex flex-wrap gap-2">'; foreach ($items as $item) echo '<span class="tag">'.e($item).'</span>'; echo '</div>'; }
 ?><!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title><?=e(ucfirst(str_replace('_',' ',$page)))?> — Portfolio</title><meta name="description" content="Developer portfolio, current systems, projects, activities, resume, and reflections."><script>try{const saved=localStorage.getItem('portfolio-theme');document.documentElement.dataset.theme=saved||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}catch(error){}</script><style>html{background:#ead5d1}html[data-theme="dark"]{background:#1e141a}</style><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet"><link rel="stylesheet" href="/assets/style.css"></head><body class="page-<?=e($page)?> bg-theme text-theme antialiased">
-<aside class="sidebar no-print"><a href="/" class="sidebar-name"><span class="brand-camera-icon" aria-hidden="true">✦</span>ePortfolio</a><button id="menu-button" class="sidebar-menu-button" aria-expanded="false" aria-controls="mobile-menu">Menu</button><nav id="mobile-menu" class="sidebar-nav hidden"><a href="/" class="<?=$page==='home'?'active':''?>">Home</a><a href="/?page=about" class="<?=in_array($page,['about','certificates'],true)?'active':''?>">Certificates</a><details class="sidebar-dropdown" <?=in_array($page,['activities','activity','reflections','reflection','resume'],true)?'open':''?>><summary class="<?=in_array($page,['activities','activity','reflections','reflection','resume'],true)?'active':''?>">Activities <span aria-hidden="true">⌄</span></summary><div class="sidebar-submenu"><a href="/?page=reflections" class="<?=in_array($page,['reflections','reflection'],true)?'active':''?>">Reflections</a><a href="/?page=resume" class="<?=$page==='resume'?'active':''?>">Resume</a></div></details><?php if(owner_logged_in()):?><a href="/?page=admin" class="nav-admin-link">Edit portfolio</a><?php endif;?></nav><div class="active-viewers" aria-live="polite"><span class="active-viewers-dot" aria-hidden="true"></span><svg class="active-viewers-eye" aria-hidden="true" viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.75"/></svg><span><strong id="active-view-count">—</strong> active now</span></div></aside>
+<aside class="sidebar no-print"><a href="/" class="sidebar-name"><span class="brand-camera-icon" aria-hidden="true">✦</span>ePortfolio</a><button id="menu-button" class="sidebar-menu-button" aria-expanded="false" aria-controls="mobile-menu">Menu</button><nav id="mobile-menu" class="sidebar-nav hidden"><a href="/" class="<?=$page==='home'?'active':''?>">Home</a><a href="/?page=about" class="<?=in_array($page,['about','certificates'],true)?'active':''?>">Certificates</a><details class="sidebar-dropdown" <?=in_array($page,['activities','activity','reflections','reflection','resume','application_letter'],true)?'open':''?>><summary class="<?=in_array($page,['activities','activity','reflections','reflection','resume','application_letter'],true)?'active':''?>">Activities <span aria-hidden="true">⌄</span></summary><div class="sidebar-submenu"><a href="/?page=reflections" class="<?=in_array($page,['reflections','reflection'],true)?'active':''?>">Reflections</a><a href="/?page=application_letter" class="<?=$page==='application_letter'?'active':''?>">Application Letter</a><a href="/?page=resume" class="<?=$page==='resume'?'active':''?>">Resume</a></div></details><?php if(owner_logged_in()):?><a href="/?page=admin" class="nav-admin-link">Edit portfolio</a><?php endif;?></nav><div class="active-viewers" aria-live="polite"><span class="active-viewers-dot" aria-hidden="true"></span><svg class="active-viewers-eye" aria-hidden="true" viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.75"/></svg><span><strong id="active-view-count">—</strong> active now</span></div></aside>
 <main class="app-main">
 <?php if($page==='home'):?>
 <?php
@@ -84,6 +84,23 @@ $profileSocials=array_filter([
         </div>
       </article>
 
+      <!-- Column 04 (Warm Terracotta Peach) -->
+      <article class="theme-pillar theme-pillar-peach" onclick="openCertModal(3)">
+        <div class="pillar-polaroid-wrap">
+          <div class="pillar-polaroid pillar-polaroid-tilted-right">
+            <iframe src="/assets/achievements/soft-skills-seminar.pdf#toolbar=0&navpanes=0&scrollbar=0&view=Fit" class="pillar-img" style="pointer-events:none; border:none; overflow:hidden;" scrolling="no"></iframe>
+            <div class="pillar-polaroid-label">Soft Skills</div>
+          </div>
+        </div>
+        <div class="pillar-body">
+          <span class="pillar-number">04.</span>
+          <h3 class="pillar-title">Soft Skills Seminar</h3>
+          <p class="pillar-meta">September 25, 2026 · J.H. Cerilles State College</p>
+          <p class="pillar-desc">Certificate of Participation in the Soft Skills Seminar held at JHCSC Library AVR, Main Campus.</p>
+          <button type="button" class="pillar-action-pill" onclick="event.stopPropagation();openCertModal(3)">View Certificate ↗</button>
+        </div>
+      </article>
+
     </div>
   </div>
 </section>
@@ -149,12 +166,72 @@ $profileSocials=array_filter([
 <?php elseif($page==='resume'): $d=$item['data']??[];?>
 <?php if(!empty($d['uploaded_pdf'])):?><div class="site-width resume-uploaded-preview"><div class="imported-pdf-shell"><iframe src="<?=e($d['uploaded_pdf'])?>" title="Imported resume PDF"></iframe><a class="button-outline no-print" href="<?=e($d['uploaded_pdf'])?>" download="<?=e($d['uploaded_pdf_name']??'resume.pdf')?>">Download PDF</a></div></div><?php endif;?>
 <section class="site-width py-10 resume-page"><div class="no-print mb-5"><p class="label">Resume document</p><h1 class="mt-2 text-3xl font-semibold">Resume</h1></div></section>
+<?php elseif($page==='application_letter'): if(!$item)$item=['title'=>'Application Letter','data'=>[]];$d=$item['data']??[];?>
+<section class="site-width py-10">
+  <div class="no-print mb-6 flex items-center justify-between">
+    <div>
+      <p class="label">Document</p>
+      <h1 class="mt-2 text-3xl font-semibold"><?=e($d['title'] ?? 'Application Letter')?></h1>
+    </div>
+  </div>
+  <?php if(!empty($d['uploaded_pdf'])):?>
+    <div class="imported-pdf-shell">
+      <iframe src="<?=e($d['uploaded_pdf'])?>" title="Imported application letter PDF"></iframe>
+      <a class="button-outline no-print" href="<?=e($d['uploaded_pdf'])?>" download="<?=e($d['uploaded_pdf_name']??'application-letter.pdf')?>">Download PDF</a>
+    </div>
+  <?php else:?>
+    <div class="paper-shell">
+      <article class="paper application-letter" style="--doc-size:<?=e($layout['font_size']??12)?>pt;--doc-line:<?=e($layout['line_height']??1.5)?>;--doc-space:<?=e($layout['section_spacing']??16)?>px;font-family:<?=e($layout['font_family']??'Times New Roman')?>,'Times New Roman',Times,serif">
+        <div class="letter-sender">
+          <p class="letter-sender-name font-bold"><?=e($d['sender_name'] ?? 'AIMIE D. VILLABETO')?></p>
+          <p><?=nl2br(e($d['sender_address'] ?? "Purok 1, Regla, Guipos\nZamboanga del Sur"))?></p>
+          <p><?=e($d['sender_phone'] ?? '09563559186')?></p>
+          <p><?=e($d['sender_email'] ?? 'aimievillabeto@gmail.com')?></p>
+        </div>
+
+        <div class="letter-date">
+          <p><?=e($d['date'] ?? 'October 1, 2026')?></p>
+        </div>
+
+        <div class="letter-recipient">
+          <p class="font-bold"><?=e($d['recipient_name'] ?? 'Maria Santos')?></p>
+          <p><?=e($d['recipient_title'] ?? 'Human Resources Manager')?></p>
+          <p><?=e($d['recipient_company'] ?? 'ABC Technology Solutions, Inc.')?></p>
+          <p><?=e($d['recipient_address'] ?? 'J.P. Laurel Avenue, Davao City, Philippines')?></p>
+        </div>
+
+        <div class="letter-salutation">
+          <p><?=e($d['salutation'] ?? 'Dear Ms. Santos:')?></p>
+        </div>
+
+        <div class="letter-body space-y-5 text-justify leading-relaxed">
+          <?php if(!empty($d['paragraphs']) && is_array($d['paragraphs'])): ?>
+            <?php foreach($d['paragraphs'] as $p): if(trim((string)$p) !== ''): ?>
+              <p class="leading-relaxed text-justify mb-5"><?=e(trim((string)$p))?></p>
+            <?php endif; endforeach; ?>
+          <?php elseif(!empty($d['content'])): ?>
+            <?php foreach(preg_split('/\r?\n\s*\r?\n/', trim((string)$d['content'])) as $p): if(trim($p) !== ''): ?>
+              <p class="leading-relaxed text-justify mb-5"><?=e(trim($p))?></p>
+            <?php endif; endforeach; ?>
+          <?php endif; ?>
+        </div>
+
+        <div class="letter-closing">
+          <p><?=e($d['complimentary_close'] ?? 'Respectfully yours,')?></p>
+          <div class="letter-signature-space"></div>
+          <p class="letter-signer-name font-bold"><?=e($d['signer_name'] ?? 'AIMIE VILLABETO')?></p>
+          <p class="letter-signer-title"><?=e($d['signer_title'] ?? 'Applicant')?></p>
+        </div>
+      </article>
+    </div>
+  <?php endif;?>
+</section>
 <?php elseif($page==='reflection'): if(!$item):http_response_code(404);echo 'Not found';else:$d=$item['data']?>
 <section class="site-width py-10">
 <div class="no-print mb-6">
   <a href="/?page=reflections" class="button-outline text-sm mb-4 inline-flex items-center gap-2">← Back to Reflections</a>
   <div class="flex items-center justify-between">
-    <div><h1 class="text-3xl font-semibold">Activity 1. Reflection</h1></div>
+    <div><h1 class="text-3xl font-semibold"><?=e($d['title'] ?? $item['title'] ?? 'Reflection')?></h1></div>
   </div>
 </div>
 <?php if(!empty($d['uploaded_pdf'])):?><div class="imported-pdf-shell"><iframe src="<?=e($d['uploaded_pdf'])?>" title="Imported reflection PDF"></iframe><a class="button-outline no-print" href="<?=e($d['uploaded_pdf'])?>" download="<?=e($d['uploaded_pdf_name']??'reflection.pdf')?>">Download PDF</a></div><?php else:?><div class="paper-shell"><article class="paper reflection <?=e($layout['reflection_template']??'academic')?>" style="--doc-size:<?=e($layout['font_size']??12)?>pt;--doc-line:<?=e($layout['line_height']??1.5)?>;--doc-space:<?=e($layout['section_spacing']??16)?>px;font-family:<?=e($layout['font_family']??'Times New Roman')?>,'Times New Roman',Times,serif"><header class="reflection-document-header text-center"><h1 class="text-3xl font-bold text-center" style="font-family:'Times New Roman',Times,serif;line-height:1.5"><?=e($d['title']??'Becoming a Professional IT Practitioner')?></h1></header><div class="reflection-body mt-6 space-y-5 text-justify leading-relaxed"><?php if(!empty($d['paragraphs'])&&is_array($d['paragraphs'])):foreach($d['paragraphs'] as $p):if(trim((string)$p)!=='')echo '<p class="leading-relaxed text-justify mb-5">'.e(trim((string)$p)).'</p>';endforeach;elseif(!empty($d['content'])):$paragraphs=preg_split('/\r?\n\s*\r?\n/',trim((string)$d['content']));foreach($paragraphs as $p):if(trim($p)!=='')echo '<p class="leading-relaxed text-justify mb-5">'.e(trim($p)).'</p>';endforeach;else:if(!empty($d['activity']))doc_section('Activity','<p>'.e($d['activity']).'</p>');foreach(['Experience'=>'experience','Observations'=>'observations','Learning'=>'learning','Next Steps'=>'next_steps','Conclusion'=>'conclusion'] as $label=>$key)if(!empty($d[$key]))doc_section($label,'<p>'.e($d[$key]).'</p>');endif;?></div></article></div><?php endif;?><?php if(!empty($d['uploaded_word'])):?><p class="no-print mt-5"><a class="button-outline" href="<?=e($d['uploaded_word'])?>" download="<?=e($d['uploaded_word_name']??'reflection.docx')?>">Download uploaded Word file</a></p><?php endif;?></section><?php endif;?>

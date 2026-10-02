@@ -75,7 +75,7 @@ final class PortfolioController
             'about', 'certificates' => ['system' => $this->content->publishedOne('current_system')['data'] ?? []],
             'activities', 'reflections' => $this->listingData($page),
             'activity', 'reflection' => ['item' => $this->content->publishedOne($page, $slug), 'layout' => $this->content->layoutSettings()],
-            'resume' => ['item' => $this->content->publishedOne('resume'), 'layout' => $this->content->layoutSettings()],
+            'resume', 'application_letter' => ['item' => $this->content->publishedOne($page), 'layout' => $this->content->layoutSettings()],
             'admin' => ['items' => array_values(array_filter(
                 $this->content->adminContent(),
                 fn (array $item): bool => !in_array($item['type'], ['current_system', 'project'], true)

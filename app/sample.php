@@ -37,6 +37,41 @@ return [
             'Overall, the course taught me that AI literacy is more than simply knowing how to use an AI tool. It involves understanding how AI works, communicating with it effectively, evaluating its output, protecting information, and knowing when human judgment is needed. I also learned the difference between automation, where AI performs tasks with limited human involvement, and augmentation, where AI assists people in completing tasks. For me, AI is most valuable when it enhances my abilities and learning rather than replacing my own effort and decision-making. This course encouraged me to become a more careful, critical, and responsible user of AI.'
         ]
     ]],
+    ['id'=>'reflection-3','type'=>'reflection','slug'=>'soft-skills-ai-assisted-resume-writing-and-interview-preparation','title'=>'Reflection on Soft Skills: AI-Assisted Resume Writing and Interview Preparation Seminar and Workshop','sort_order'=>0,'is_published'=>1,'data'=>[
+        'title'=>'Reflection on Soft Skills: AI-Assisted Resume Writing and Interview Preparation Seminar and Workshop',
+        'slug'=>'soft-skills-ai-assisted-resume-writing-and-interview-preparation',
+        'date'=>'2026-10-02',
+        'course'=>'Bachelor of Science in Information Technology',
+        'instructor'=>'IT Department',
+        'paragraphs'=>[
+            'The soft skills seminar gave me valuable knowledge that I can use when preparing for my future career. One of the important things I learned was how to create a professional resume, application letter, and cover letter with the help of AI. Before the seminar, I knew that these documents were important when applying for a job, but I learned that creating them effectively requires proper organization and clear information about my skills, experiences, and qualifications. I also learned that AI can be a useful tool in preparing these documents, but the quality of the output depends greatly on the prompt that is provided. A clear, specific, and well-structured prompt can help AI produce a more relevant and appropriate response. This taught me that I should not simply rely on AI to create everything for me, but I should know how to give proper instructions and review the information to make sure it accurately represents me.',
+            'Another important lesson I gained from the seminar was how to answer interview questions using the chaining method and the STAR technique. I learned that interviews are not only about answering questions but also about communicating my experiences, skills, and abilities clearly and confidently. The chaining method helped me understand how one answer can lead to another related idea, allowing me to provide a more connected and meaningful response. Meanwhile, the STAR technique taught me how to structure my answers by explaining the Situation, Task, Action, and Result. This technique can help me avoid giving incomplete or confusing answers because it provides a clear structure for explaining experiences. Through these techniques, I realized that being prepared for an interview is not just about memorizing possible answers, but also about knowing how to organize my thoughts and explain my experiences in a way that the interviewer can easily understand.',
+            'The knowledge and skills I gained from the seminar will help me become more prepared and confident when applying for jobs in the future. I can apply what I learned about AI by creating more professional resumes, application letters, and cover letters while making sure that the information reflects my actual skills and experiences. The lessons about prompting will also help me use AI more responsibly and effectively instead of accepting its responses without reviewing them. In addition, the chaining method and STAR technique will help me communicate my experiences more clearly during interviews and respond to questions with greater confidence. These skills will be valuable not only during job applications but also in the workplace, where effective communication, proper preparation, and the ability to present myself professionally are important. Overall, the seminar helped me understand that having technical knowledge is not enough; I also need strong soft skills to effectively communicate my abilities and prepare myself for future career opportunities.'
+        ]
+    ]],
+    ['id'=>'application-letter','type'=>'application_letter','slug'=>'application-letter','title'=>'Application Letter','sort_order'=>0,'is_published'=>1,'data'=>[
+        'title'=>'Application Letter',
+        'slug'=>'application-letter',
+        'sender_name'=>'AIMIE D. VILLABETO',
+        'sender_address'=>"Purok 1, Regla, Guipos\nZamboanga del Sur",
+        'sender_phone'=>'09563559186',
+        'sender_email'=>'aimievillabeto@gmail.com',
+        'date'=>'October 1, 2026',
+        'recipient_name'=>'Maria Santos',
+        'recipient_title'=>'Human Resources Manager',
+        'recipient_company'=>'ABC Technology Solutions, Inc.',
+        'recipient_address'=>'J.P. Laurel Avenue, Davao City, Philippines',
+        'salutation'=>'Dear Ms. Santos:',
+        'paragraphs'=>[
+            'I am writing to formally apply for the position of Database Administrator (DBA) at ABC Technology Solutions, Inc. I am a fresh graduate of Bachelor of Science in Information Technology, and I am eager to begin my professional career by applying the knowledge and skills I have gained throughout my academic studies.',
+            'During my college education, I developed foundational knowledge and practical skills in database management, SQL, MySQL, system development, network configuration and troubleshooting, and Microsoft Office applications. I also gained hands-on experience in managing databases through academic projects, where I learned how to organize, maintain, and retrieve data efficiently. These experiences helped me develop my problem-solving skills, attention to detail, and understanding of the importance of data accuracy and security.',
+            'As a fresh graduate, I am willing to learn new technologies, undergo training, and adapt to the procedures and systems of your organization. I am a responsible, hardworking, and motivated individual who is committed to continuously improving my technical and professional skills. I believe that my educational background and interest in database administration would allow me to contribute positively to your organization.',
+            'I would greatly appreciate the opportunity to discuss my qualifications further in an interview. I am available at your and can be reached through my contact number or email address provided above. Thank you for considering convenience my application. I look forward to the opportunity to become a part of your organization.'
+        ],
+        'complimentary_close'=>'Respectfully yours,',
+        'signer_name'=>'AIMIE VILLABETO',
+        'signer_title'=>'Applicant'
+    ]],
     ['id'=>'resume','type'=>'resume','slug'=>'resume','title'=>'Resume','sort_order'=>0,'is_published'=>1,'data'=>[
         'resume_version'=>2,'name'=>'AIMIE VILLABETO D.','headline'=>'STUDENT DEVELOPER','location'=>'Regla, Guipos, Zamboanga del Sur','phone'=>'','email'=>'','github'=>'github.com/aimievillabeto-dragon','linkedin'=>'','website'=>'Portfolio','summary'=>'Student developer committed to improving her skills and building practical solutions through consistent learning and hands-on work.','skills'=>[['group'=>'Languages','items'=>['PHP','JavaScript','Python','HTML','CSS']],['group'=>'Databases','items'=>['MySQL']],['group'=>'Tools & Platforms','items'=>['Git','GitHub','VS Code']]],'projects'=>[],'education_degree'=>'','education_period'=>'','education_school'=>'','activity_role'=>'','activity_organization'=>'','activity_year'=>'','activity_details'=>'','certifications'=>'']],
     ['id'=>'contact','type'=>'contact','slug'=>'contact','title'=>'Contact','sort_order'=>0,'is_published'=>1,'data'=>[
