@@ -280,7 +280,7 @@ $profileSocials=array_filter([
     <button class="cert-lightbox-nav-btn" id="cert-lightbox-next" onclick="event.stopPropagation();navigateCert(1)" aria-label="Next certificate">&#8250;</button>
   </div>
 </div>
-<script src="/assets/app.js" defer></script></body></html>
+<script src="/assets/app.js?v=2" defer></script></body></html>
 <?php
 function page_head(string $label,string $title,string $description):void{echo '<header class="border-b border-neutral-200"><div class="site-width py-16"><p class="label">'.e($label).'</p><h1 class="mt-4 text-5xl font-semibold tracking-[-.04em]">'.e($title).'</h1><p class="mt-5 max-w-3xl text-lg text-neutral-600">'.e($description).'</p></div></header>';}
 function doc_section(string $title,string $html):void{echo '<section class="doc-section"><h2>'.e($title).'</h2>'.$html.'</section>';}

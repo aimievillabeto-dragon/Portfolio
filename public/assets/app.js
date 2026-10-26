@@ -45,16 +45,15 @@ if (activeViewCount) {
   });
 }
 
+// Ensure only one greeting exists
+const greetings = document.querySelectorAll('.editorial-greeting');
+if (greetings.length > 1) {
+  for (let i = 1; i < greetings.length; i++) greetings[i].remove();
+}
+
 // Profile full information modal
 const profileNameButton = document.querySelector('#profile-name-button');
 const profileInfo = document.querySelector('#profile-full-info');
-const profileIntro = document.querySelector('.profile-intro');
-if (profileIntro && profileNameButton && !profileIntro.querySelector('.editorial-greeting')) {
-  const greeting = document.createElement('p');
-  greeting.className = 'editorial-greeting';
-  greeting.textContent = 'Hello';
-  profileIntro.prepend(greeting);
-}
 
 let profileCloseButton;
 let profileBackdrop;
