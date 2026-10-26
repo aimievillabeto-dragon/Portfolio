@@ -6,4 +6,5 @@ public/uploads/documents/*
 !public/uploads/documents/.gitkeep
 database/*_export.sql
 __pycache__/
+node_modules/
 .DS_Store

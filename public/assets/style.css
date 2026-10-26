@@ -149,6 +149,7 @@ html[data-theme="dark"] .theme-sun { opacity: 1; transform: rotate(0) scale(1); 
 .landing-profile { display: grid; max-width: 1080px; min-height: 74vh; grid-template-columns: 280px minmax(0, 1fr); align-content: center; gap: 3rem 3.5rem; }
 .profile-portrait { width: 280px; }
 .profile-photo { position: relative; display: grid; aspect-ratio: 1; width: 280px; place-items: center; overflow: hidden; border: 1px solid rgba(0,0,0,.08); border-radius: 18px; background: #fff; color: #fff; box-shadow: 0 24px 55px rgba(0,0,0,.15); }
+.profile-photo picture { display: contents; }
 .profile-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
 .profile-photo span { font-size: 3.25rem; font-weight: 700; letter-spacing: -.07em; }
 .profile-socials { display: flex; flex-wrap: wrap; justify-content: center; gap: .45rem 1rem; margin-top: 1.75rem; }
@@ -1029,6 +1030,9 @@ html[data-theme="dark"] .refl-btn:hover { background: #fff; }
   box-shadow: 0 32px 80px rgba(88, 60, 76, 0.3);
 }
 
+.profile-photo picture {
+  display: contents;
+}
 .profile-photo img {
   width: 100%;
   height: 100%;

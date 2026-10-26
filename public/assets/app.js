@@ -3,7 +3,7 @@ themeToggle.type='button';
 themeToggle.className='theme-toggle no-print';
 themeToggle.setAttribute('aria-label','Switch color theme');
 themeToggle.innerHTML='<span class="theme-sun" aria-hidden="true">☀</span><span class="theme-moon" aria-hidden="true">☾</span>';
-document.body.append(themeToggle);
+
 const languageCloud=document.createElement('aside');
 languageCloud.className='language-cloud no-print';
 languageCloud.setAttribute('aria-label','Programming technologies');
@@ -33,11 +33,16 @@ languageIcons.forEach(([icon,label,x,y,rotation,scale],index)=>{
   item.style.setProperty('--cloud-i',String(index));
   languageCloud.append(item);
 });
-document.body.append(languageCloud);
+
 const dotCanvas=document.createElement('canvas');
 dotCanvas.className='cursor-dot-field no-print';
 dotCanvas.setAttribute('aria-hidden','true');
-document.body.append(dotCanvas);
+
+// Batch DOM inserts to avoid multiple layout passes
+const initFrag=document.createDocumentFragment();
+initFrag.append(themeToggle,languageCloud,dotCanvas);
+document.body.append(initFrag);
+
 const dotContext=dotCanvas.getContext('2d');
 const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let dotWidth=0;
@@ -47,22 +52,29 @@ let pointerX=window.innerWidth*.72;
 let pointerY=window.innerHeight*.35;
 let smoothX=pointerX;
 let smoothY=pointerY;
+let cachedDark=document.documentElement.dataset.theme==='dark';
+
 const resizeDotField=()=>{
   dotRatio=Math.min(window.devicePixelRatio||1,2);
-  dotWidth=window.innerWidth;
-  dotHeight=window.innerHeight;
+  const w=window.innerWidth;
+  const h=window.innerHeight;
+  if(w===dotWidth&&h===dotHeight)return;
+  dotWidth=w;
+  dotHeight=h;
   dotCanvas.width=Math.round(dotWidth*dotRatio);
   dotCanvas.height=Math.round(dotHeight*dotRatio);
   dotCanvas.style.width=dotWidth+'px';
   dotCanvas.style.height=dotHeight+'px';
   dotContext?.setTransform(dotRatio,0,0,dotRatio,0,0);
 };
+
+let animFrameId=0;
 const drawDotField=(time=0)=>{
-  if(!dotContext)return;
+  if(!dotContext||document.hidden)return;
   smoothX+=((pointerX-smoothX)*(reducedMotion?1:.12));
   smoothY+=((pointerY-smoothY)*(reducedMotion?1:.12));
   dotContext.clearRect(0,0,dotWidth,dotHeight);
-  const dark=document.documentElement.dataset.theme==='dark';
+  const dark=cachedDark;
   const spacing=22;
   const radius=185;
   for(let y=spacing/2;y<dotHeight;y+=spacing){
@@ -78,16 +90,32 @@ const drawDotField=(time=0)=>{
       dotContext.fill();
     }
   }
-  if(!reducedMotion)requestAnimationFrame(drawDotField);
+  if(!reducedMotion&&!document.hidden)animFrameId=requestAnimationFrame(drawDotField);
 };
-window.addEventListener('resize',resizeDotField);
-window.addEventListener('pointermove',(event)=>{pointerX=event.clientX;pointerY=event.clientY},{passive:true});
+
+let resizeRaf=0;
+window.addEventListener('resize',()=>{
+  if(!resizeRaf){
+    resizeRaf=requestAnimationFrame(()=>{
+      resizeDotField();
+      resizeRaf=0;
+    });
+  }
+},{passive:true});
+
+window.addEventListener('pointermove',(event)=>{
+  pointerX=event.clientX;
+  pointerY=event.clientY;
+},{passive:true});
+
 resizeDotField();
-if(reducedMotion)drawDotField();else requestAnimationFrame(drawDotField);
+if(reducedMotion)drawDotField();else animFrameId=requestAnimationFrame(drawDotField);
+
 const savedTheme=localStorage.getItem('portfolio-theme');
 const preferredTheme=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
 const setTheme=(theme)=>{
   document.documentElement.dataset.theme=theme;
+  cachedDark=(theme==='dark');
   themeToggle.setAttribute('aria-label',theme==='dark'?'Switch to light mode':'Switch to dark mode');
   themeToggle.setAttribute('aria-pressed',String(theme==='dark'));
   if(reducedMotion)drawDotField();
@@ -101,7 +129,13 @@ themeToggle.addEventListener('click',()=>{
   window.setTimeout(()=>document.documentElement.classList.remove('theme-changing'),550);
 });
 
-const button=document.querySelector('#menu-button');const menu=document.querySelector('#mobile-menu');button?.addEventListener('click',()=>{menu?.classList.toggle('hidden');button.setAttribute('aria-expanded',String(!menu?.classList.contains('hidden')))});
+const button=document.querySelector('#menu-button');
+const menu=document.querySelector('#mobile-menu');
+button?.addEventListener('click',()=>{
+  menu?.classList.toggle('hidden');
+  button.setAttribute('aria-expanded',String(!menu?.classList.contains('hidden')));
+});
+
 const mainNavigation=document.querySelector('.sidebar-nav');
 if(mainNavigation&&!mainNavigation.querySelector('a[href*="page=about"], a[href*="page=certificates"]')){
   const certLink=document.createElement('a');
@@ -109,6 +143,7 @@ if(mainNavigation&&!mainNavigation.querySelector('a[href*="page=about"], a[href*
   certLink.textContent='Certificates';
   mainNavigation.querySelector('a')?.after(certLink);
 }
+
 const activeViewCount=document.querySelector('#active-view-count');
 const updateActiveViews=async()=>{
   if(!activeViewCount||document.hidden)return;
@@ -121,14 +156,17 @@ const updateActiveViews=async()=>{
 };
 updateActiveViews();
 window.setInterval(updateActiveViews,30000);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)updateActiveViews()});
+document.addEventListener('visibilitychange',()=>{
+  if(!document.hidden){
+    updateActiveViews();
+    if(!reducedMotion&&!animFrameId)animFrameId=requestAnimationFrame(drawDotField);
+  }
+});
 
 const profileNameButton=document.querySelector('#profile-name-button');
 const profileInfo=document.querySelector('#profile-full-info');
-const learningTags=document.querySelector('.profile-intro > .mt-6');
-const currentWork=document.querySelector('.current-work');
 const profileIntro=document.querySelector('.profile-intro');
-if(profileIntro&&profileNameButton){
+if(profileIntro&&profileNameButton&&!profileIntro.querySelector('.editorial-greeting')){
   const greeting=document.createElement('p');
   greeting.className='editorial-greeting';
   greeting.textContent='Hello';
@@ -141,34 +179,47 @@ if(profileInfo){
   profileInfo.setAttribute('role','dialog');
   profileInfo.setAttribute('aria-modal','true');
   profileInfo.setAttribute('aria-label','Full profile information');
-  const addressValue=document.querySelector('.profile-meta span')?.textContent.trim();
+
   const infoList=profileInfo.querySelector('dl');
-  if(addressValue&&infoList){
-    const addressItem=document.createElement('div');
-    const addressLabel=document.createElement('dt');
-    const addressText=document.createElement('dd');
-    addressLabel.textContent='Address';
-    addressText.textContent=addressValue;
-    addressItem.append(addressLabel,addressText);
-    infoList.append(addressItem);
+  if(infoList&&!infoList.textContent.includes('Address')){
+    const addressValue=document.querySelector('.profile-meta span')?.textContent.trim();
+    if(addressValue){
+      const addressItem=document.createElement('div');
+      const addressLabel=document.createElement('dt');
+      const addressText=document.createElement('dd');
+      addressLabel.textContent='Address';
+      addressText.textContent=addressValue;
+      addressItem.append(addressLabel,addressText);
+      infoList.append(addressItem);
+    }
   }
+
   profileCloseButton=document.createElement('button');
   profileCloseButton.type='button';
   profileCloseButton.className='profile-info-close';
   profileCloseButton.setAttribute('aria-label','Close full information');
   profileCloseButton.textContent='×';
   profileInfo.prepend(profileCloseButton);
-  document.body.append(profileInfo);
+
   profileBackdrop=document.createElement('div');
   profileBackdrop.className='profile-modal-backdrop';
   profileBackdrop.hidden=true;
-  document.body.append(profileBackdrop);
+
+  // Batch DOM append for profile modal elements
+  const modalFrag=document.createDocumentFragment();
+  modalFrag.append(profileInfo,profileBackdrop);
+  document.body.append(modalFrag);
 }
+
 const setProfileInfoOpen=(willOpen)=>{
   if(!profileInfo||!profileNameButton)return;
+  // Eliminate forced reflow by using requestAnimationFrame instead of reading offsetWidth
   profileNameButton.classList.remove('is-tapped');
-  void profileNameButton.offsetWidth;
-  profileNameButton.classList.add('is-tapped');
+  requestAnimationFrame(()=>{
+    profileNameButton.classList.add('is-tapped');
+  });
+
+  // Batch writes to attributes and class lists
   profileNameButton.setAttribute('aria-expanded',String(willOpen));
   profileNameButton.closest('.profile-name-wrap')?.classList.toggle('is-open',willOpen);
   document.body.classList.toggle('profile-modal-open',willOpen);
@@ -186,39 +237,47 @@ profileCloseButton?.addEventListener('click',()=>setProfileInfoOpen(false));
 profileBackdrop?.addEventListener('click',()=>setProfileInfoOpen(false));
 document.addEventListener('keydown',(event)=>{if(event.key==='Escape'&&!profileInfo?.hidden)setProfileInfoOpen(false)});
 
-document.querySelectorAll('.pdf-import-form').forEach((pdfForm)=>{
-  const wordForm=pdfForm.cloneNode(true);
-  wordForm.classList.add('word-import-form');
-  const action=wordForm.querySelector('input[name="action"]');
-  const input=wordForm.querySelector('input[type="file"]');
-  const label=wordForm.querySelector('label span');
-  if(action)action.value='upload_word';
-  if(input){input.name='word';input.accept='application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx';}
-  if(label)label.textContent='Import Word (.docx)';
-  pdfForm.after(wordForm);
-});
-
-document.querySelectorAll('.pdf-import-form input[type="file"]').forEach((input)=>{
-  input.addEventListener('change',()=>{
-    const label=input.closest('label')?.querySelector('span');
-    if(label)label.textContent=input.files?.[0]?.name||(input.name==='word'?'Import Word (.docx)':'Import PDF');
+const pdfForms=document.querySelectorAll('.pdf-import-form');
+if(pdfForms.length){
+  pdfForms.forEach((pdfForm)=>{
+    const wordForm=pdfForm.cloneNode(true);
+    wordForm.classList.add('word-import-form');
+    const action=wordForm.querySelector('input[name="action"]');
+    const input=wordForm.querySelector('input[type="file"]');
+    const label=wordForm.querySelector('label span');
+    if(action)action.value='upload_word';
+    if(input){input.name='word';input.accept='application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx';}
+    if(label)label.textContent='Import Word (.docx)';
+    pdfForm.after(wordForm);
   });
-});
 
-document.querySelectorAll('a[download]').forEach((link)=>{
-  if(link.textContent.trim()!=='Download uploaded Word file')return;
-  link.closest('p')?.classList.add('document-download-action');
-  link.removeAttribute('href');
-  link.removeAttribute('download');
-  link.setAttribute('role','button');
-  link.setAttribute('tabindex','0');
-  link.textContent='Download PDF';
+  document.querySelectorAll('.pdf-import-form input[type="file"]').forEach((input)=>{
+    input.addEventListener('change',()=>{
+      const label=input.closest('label')?.querySelector('span');
+      if(label)label.textContent=input.files?.[0]?.name||(input.name==='word'?'Import Word (.docx)':'Import PDF');
+    });
+  });
+}
+
+// Batch DOM reads before DOM writes to prevent layout thrashing
+const downloadLinks=Array.from(document.querySelectorAll('a[download]')).filter(
+  link=>link.textContent.trim()==='Download uploaded Word file'
+);
+if(downloadLinks.length){
   const savePdf=()=>window.print();
-  link.addEventListener('click',savePdf);
-  link.addEventListener('keydown',(event)=>{
-    if(event.key==='Enter'||event.key===' '){event.preventDefault();savePdf();}
+  downloadLinks.forEach((link)=>{
+    link.closest('p')?.classList.add('document-download-action');
+    link.removeAttribute('href');
+    link.removeAttribute('download');
+    link.setAttribute('role','button');
+    link.setAttribute('tabindex','0');
+    link.textContent='Download PDF';
+    link.addEventListener('click',savePdf);
+    link.addEventListener('keydown',(event)=>{
+      if(event.key==='Enter'||event.key===' '){event.preventDefault();savePdf();}
+    });
   });
-});
+}
 
 /* ============================================================
    Polaroid photo stack — cycle & lightbox
@@ -229,20 +288,20 @@ const CERTS = [
   { src: '/assets/achievements/ai-power-user.pdf#navpanes=1', label: 'AI Power User Launchpad' },
   { src: '/assets/achievements/soft-skills-seminar.pdf#navpanes=1', label: 'Soft Skills Seminar' },
   { src: '/assets/achievements/cloud-computing-microsoft.pdf#navpanes=1', label: 'Building Your IT Career: Opportunities in Cloud Computing and Microsoft Technologies' },
-  { src: '/assets/profile-photo.png',                         label: 'Aimie Villabeto · BSIT Student Developer' }
+  { src: '/assets/profile-photo.webp',                        label: 'Aimie Villabeto · BSIT Student Developer' }
 ];
 let currentCert = 0;
 let isAnimating  = false;
 
 /** Sync info cards highlight to the current front photo */
 function syncInfoCards(idx) {
-  // Support both old (.achievement-info-card) and new (.ach-item) selectors
   const cards = document.querySelectorAll('.ach-item, .achievement-info-card');
+  const dots  = document.querySelectorAll('.polaroid-dot');
+  if (!cards.length && !dots.length) return;
   cards.forEach((card, i) => {
     card.classList.toggle('is-active', i === idx);
   });
-  // update dots
-  document.querySelectorAll('.polaroid-dot').forEach((d, i) => {
+  dots.forEach((d, i) => {
     d.classList.toggle('active', i === idx);
   });
 }
@@ -390,6 +449,7 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
-// Init active state on page load
-syncInfoCards(0);
-
+// Init active state on page load only if polaroid elements exist
+if (document.querySelector('.ach-item, .achievement-info-card, .polaroid-dot')) {
+  syncInfoCards(0);
+}
