@@ -58,22 +58,24 @@ const profileInfo = document.querySelector('#profile-full-info');
 let profileCloseButton;
 let profileBackdrop;
 if (profileInfo) {
+  // Batch DOM reads first
+  const infoList = profileInfo.querySelector('dl');
+  const needsAddress = infoList && !infoList.textContent.includes('Address');
+  const addressValue = needsAddress ? document.querySelector('.profile-meta span')?.textContent.trim() : null;
+
+  // Batch DOM writes
   profileInfo.setAttribute('role', 'dialog');
   profileInfo.setAttribute('aria-modal', 'true');
   profileInfo.setAttribute('aria-label', 'Full profile information');
 
-  const infoList = profileInfo.querySelector('dl');
-  if (infoList && !infoList.textContent.includes('Address')) {
-    const addressValue = document.querySelector('.profile-meta span')?.textContent.trim();
-    if (addressValue) {
-      const addressItem = document.createElement('div');
-      const addressLabel = document.createElement('dt');
-      const addressText = document.createElement('dd');
-      addressLabel.textContent = 'Address';
-      addressText.textContent = addressValue;
-      addressItem.append(addressLabel, addressText);
-      infoList.append(addressItem);
-    }
+  if (addressValue && infoList) {
+    const addressItem = document.createElement('div');
+    const addressLabel = document.createElement('dt');
+    const addressText = document.createElement('dd');
+    addressLabel.textContent = 'Address';
+    addressText.textContent = addressValue;
+    addressItem.append(addressLabel, addressText);
+    infoList.append(addressItem);
   }
 
   profileCloseButton = document.createElement('button');
@@ -86,30 +88,31 @@ if (profileInfo) {
   profileBackdrop = document.createElement('div');
   profileBackdrop.className = 'profile-modal-backdrop';
   profileBackdrop.hidden = true;
-
-  const modalFrag = document.createDocumentFragment();
-  modalFrag.append(profileInfo, profileBackdrop);
-  document.body.append(modalFrag);
+  document.body.append(profileBackdrop);
 }
 
 const setProfileInfoOpen = (willOpen) => {
   if (!profileInfo || !profileNameButton) return;
-  profileNameButton.classList.remove('is-tapped');
-  requestAnimationFrame(() => {
-    profileNameButton.classList.add('is-tapped');
-  });
 
+  // Batch DOM writes together
   profileNameButton.setAttribute('aria-expanded', String(willOpen));
   profileNameButton.closest('.profile-name-wrap')?.classList.toggle('is-open', willOpen);
   document.body.classList.toggle('profile-modal-open', willOpen);
   profileInfo.hidden = !willOpen;
   profileInfo.classList.toggle('is-visible', willOpen);
+
   if (profileBackdrop) {
     profileBackdrop.hidden = !willOpen;
     requestAnimationFrame(() => profileBackdrop?.classList.toggle('is-visible', willOpen));
   }
-  if (willOpen) profileCloseButton?.focus();
-  else profileNameButton.focus();
+
+  // Batch class animation and focus in requestAnimationFrame to prevent synchronous layout recalc
+  requestAnimationFrame(() => {
+    profileNameButton.classList.remove('is-tapped');
+    profileNameButton.classList.add('is-tapped');
+    if (willOpen) profileCloseButton?.focus();
+    else profileNameButton?.focus();
+  });
 };
 profileNameButton?.addEventListener('click', () => setProfileInfoOpen(Boolean(profileInfo?.hidden)));
 profileCloseButton?.addEventListener('click', () => setProfileInfoOpen(false));
