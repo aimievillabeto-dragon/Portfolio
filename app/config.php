@@ -37,6 +37,8 @@ function db(): PDO
 
 function database_ready(): bool
 {
-    try { db()->query('SELECT 1 FROM content_documents LIMIT 1'); return true; }
-    catch (Throwable) { return false; }
+    static $ready = null;
+    if ($ready !== null) return $ready;
+    try { db()->query('SELECT 1 FROM content_documents LIMIT 1'); return $ready = true; }
+    catch (Throwable) { return $ready = false; }
 }

@@ -16,6 +16,18 @@ if($path!=='/'&&is_file($file)){
     };
     if ($mime) {
         header("Content-Type: {$mime}");
+        if (in_array($ext, ['css', 'js', 'webp', 'png', 'jpg', 'jpeg', 'svg', 'woff2'], true)) {
+            header('Cache-Control: public, max-age=31536000, immutable');
+        }
+        $canGzip = in_array($ext, ['css', 'js', 'svg'], true)
+            && str_contains($_SERVER['HTTP_ACCEPT_ENCODING'] ?? '', 'gzip')
+            && function_exists('gzencode');
+        if ($canGzip) {
+            header('Content-Encoding: gzip');
+            header('Vary: Accept-Encoding');
+            echo gzencode((string) file_get_contents($file), 9);
+            return true;
+        }
         readfile($file);
         return true;
     }

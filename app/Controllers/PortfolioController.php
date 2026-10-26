@@ -12,22 +12,28 @@ final class PortfolioController
 
     public function handle(): void
     {
-        start_secure_session();
         $page = $_GET['page'] ?? 'home';
         $slug = $_GET['slug'] ?? null;
         $error = null;
 
         if ($page === 'heartbeat') $this->heartbeat();
         if (database_ready()) {
-            $this->ensurePortfolioRecords();
+            if (owner_logged_in() || (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST')) {
+                $this->ensurePortfolioRecords();
+            }
             if ($page === 'document') $this->serveDocument();
         }
 
         if (in_array($page, ['admin', 'edit', 'layouts'], true) && !owner_logged_in()) $this->redirect('login');
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             $error = empty($_POST) && (int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 0
                 ? 'The upload is larger than the hosting limit of ' . ini_get('post_max_size') . '. Compress the file and try again.'
                 : $this->handlePost();
+        }
+
+        // Cache public guest requests
+        if (!owner_logged_in() && ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET') {
+            header('Cache-Control: public, max-age=180, stale-while-revalidate=86400');
         }
 
         View::render('portfolio', [
@@ -44,26 +50,9 @@ final class PortfolioController
     {
         $profile = $this->content->publishedOne('profile')['data'] ?? [];
         $targetIntro = "I'm Aimie Villabeto. An IT student who enjoys turning ideas into functional digital solutions. Here, you'll find a collection of my projects, skills, experiences, and the things I've learned along the way.";
-        $targetBio = "";
-        if (empty($profile['intro']) || $profile['intro'] !== $targetIntro) {
+        if (empty($profile['intro'])) {
             $profile['intro'] = $targetIntro;
-            $profile['biography'] = $targetBio;
-            if (database_ready()) {
-                try {
-                    $stmt = db()->query("SELECT id, draft_data, published_data FROM content_documents WHERE type='profile' LIMIT 1");
-                    $row = $stmt ? $stmt->fetch() : null;
-                    if ($row) {
-                        $draft = json_decode($row['draft_data'], true) ?: [];
-                        $published = json_decode($row['published_data'], true) ?: [];
-                        $draft['intro'] = $targetIntro;
-                        $draft['biography'] = $targetBio;
-                        $published['intro'] = $targetIntro;
-                        $published['biography'] = $targetBio;
-                        $update = db()->prepare("UPDATE content_documents SET draft_data=?, published_data=? WHERE id=?");
-                        $update->execute([json_encode($draft, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), json_encode($published, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), $row['id']]);
-                    }
-                } catch (\Throwable) {}
-            }
+            $profile['biography'] = "";
         }
         return $profile;
     }

@@ -5,6 +5,8 @@ namespace App\Models;
 
 final class Content
 {
+    private array $cache = [];
+
     private function samples(): array
     {
         static $items;
@@ -13,17 +15,21 @@ final class Content
 
     public function published(string $type): array
     {
+        if (isset($this->cache[$type])) {
+            return $this->cache[$type];
+        }
+
         if (!database_ready()) {
-            return array_values(array_filter($this->samples(), fn (array $item): bool => $item['type'] === $type));
+            return $this->cache[$type] = array_values(array_filter($this->samples(), fn (array $item): bool => $item['type'] === $type));
         }
 
         $statement = db()->prepare('SELECT id,type,slug,title,published_data AS data,is_published,sort_order FROM content_documents WHERE type=? AND is_published=1 ORDER BY sort_order,id');
         $statement->execute([$type]);
         $rows = array_map(fn (array $row): array => [...$row, 'data' => json_decode($row['data'], true)], $statement->fetchAll());
         if (empty($rows)) {
-            return array_values(array_filter($this->samples(), fn (array $item): bool => $item['type'] === $type));
+            return $this->cache[$type] = array_values(array_filter($this->samples(), fn (array $item): bool => $item['type'] === $type));
         }
-        return $rows;
+        return $this->cache[$type] = $rows;
     }
 
     public function publishedOne(string $type, ?string $slug = null): ?array
@@ -43,8 +49,10 @@ final class Content
 
     public function layoutSettings(): array
     {
+        static $cachedLayout = null;
+        if ($cachedLayout !== null) return $cachedLayout;
         $default = ['resume_template'=>'classic','reflection_template'=>'academic','font_family'=>'Times New Roman','font_size'=>12,'line_height'=>1.5,'section_spacing'=>16];
-        if (!database_ready()) return $default;
-        return db()->query('SELECT * FROM document_layouts WHERE id=1')->fetch() ?: $default;
+        if (!database_ready()) return $cachedLayout = $default;
+        return $cachedLayout = (db()->query('SELECT * FROM document_layouts WHERE id=1')->fetch() ?: $default);
     }
 }
